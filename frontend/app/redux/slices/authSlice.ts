@@ -1,77 +1,120 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import {login} from '../../service/authApi'
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { apiLogin, apiRegister, apiGoogleLogin } from '@/app/service/authApi';
 
-
-interface currentUser {
-  id:string,
-  userName:string,
-  email:string,
-  password:string
+interface User {
+  id?: number | string;
+  email: string;
+  role: string;
+  username?: string;
 }
 
-interface productState {
-  currentUser: currentUser|null;
+interface AuthState {
+  currentUser: User | null;
   loading: boolean;
-  isLoggedIn:boolean
   error: string | null;
+  isLoggedIn: boolean;
 }
 
-const initialState: productState = {
-  currentUser:null,
+const initialState: AuthState = {
+  currentUser: null,
   loading: false,
-  isLoggedIn:false,
   error: null,
+  isLoggedIn: false,
 };
-export const loginUser = createAsyncThunk("loginUser", async (user: any,{ rejectWithValue }) => {
-    try {
-      console.log("thunk",user)
-      const User = await login(user);
-      console.log(User)
-      return  User;
 
-    } catch (error: any) {
-        console.log("error",error)
-      return rejectWithValue(error.response?.data?.message || error.message);
+// THUNKS
+export const loginUser = createAsyncThunk(
+  'auth/loginUser',
+  async (user: any, { rejectWithValue }) => {
+    try {
+      return await apiLogin(user);
+    } catch (err: any) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const registerUser = createAsyncThunk(
+  'auth/registerUser',
+  async (user: any, { rejectWithValue }) => {
+    try {
+      return await apiRegister(user);
+    } catch (err: any) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
+
+export const googleLogin = createAsyncThunk(
+  'auth/googleLogin',
+  async (user: any, { rejectWithValue }) => {
+    try {
+      return await apiGoogleLogin(user);
+    } catch (err: any) {
+      return rejectWithValue(err.message);
     }
   }
 );
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState: initialState,
+  initialState,
   reducers: {
-    handleLogout (state){
-      state.currentUser=null
+    logout: (state) => {
+      state.currentUser = null;
+      state.isLoggedIn = false;
     }
-
-    },
-    extraReducers: (builder) => {
+  },
+  extraReducers: (builder) => {
     builder
+      // LOGIN
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
-        state.isLoggedIn= false;
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-
-      
-        console.log('fulfilled',action.payload)
+        console.log("actionpayload",action.payload)
         state.loading = false;
         state.isLoggedIn = true;
         state.currentUser = action.payload;
-       
-        })
-      .addCase(loginUser.rejected, (state, action) => {
-        console.log("reject")
+        state.error = null;
+      })
+      .addCase(loginUser.rejected, (state, action: any) => {
         state.loading = false;
-        state.isLoggedIn= false;
-        state.error = action.payload as string;
-        state.currentUser = null;
+        state.error = action.payload;
+      })
+
+      // REGISTER
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(registerUser.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(registerUser.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // GOOGLE LOGIN
+      .addCase(googleLogin.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        state.loading = false;
+        state.isLoggedIn = true;
+        state.currentUser = action.payload;
+        state.error = null;
+      })
+      .addCase(googleLogin.rejected, (state, action: any) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
-    
-  },
-)
+});
 
-export const { handleLogout }  = authSlice.actions
-export default authSlice.reducer
+export const { logout } = authSlice.actions;
+export default authSlice.reducer;

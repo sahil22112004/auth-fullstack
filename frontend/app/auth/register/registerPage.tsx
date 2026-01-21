@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Box, TextField, Button, Typography, Paper, InputAdornment, IconButton,MenuItem } from "@mui/material";
 import * as z from "zod";
 import { useSnackbar } from "notistack";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 // import { useNavigate } from "react-router";
 import { createUserWithEmailAndPassword, signInWithPopup, } from "firebase/auth";
 import { auth, googleProvider, db } from "../../firebase/firebase";
@@ -13,17 +13,20 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 import Link from "next/link";
-import { register, siginwithgoogle } from "@/app/service/authApi";
 import { Password } from "@mui/icons-material";
 import { useRouter } from 'next/navigation'
+import { googleLogin, registerUser } from "@/app/redux/slices/authSlice";
+import { AppDispatch, RootState } from "@/app/redux/store";
 
 
 function Register() {
 //   const navigate = useNavigate();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const [showPassword, setShowPassword] = useState(false);
+  const {error,isLoggedIn,loading,currentUser} = useSelector((state:RootState)=>state.auth)
+
 
   const signupSchema = z.object({
     userName: z.string().min(1, "User Name is required"),
@@ -56,82 +59,37 @@ function Register() {
     },
   });
 
-  // const onSubmit = async (user: SignupForm) => {
-  //   try {
-  //     const userCredential = await createUserWithEmailAndPassword(
-  //       auth,
-  //       user.email,
-  //       user.password
-  //     );
 
+const onSubmit = async (data: any) => {
+  const res = await dispatch(registerUser(data));
 
-  //     const firebaseUser = userCredential.user;
-  //     console.log(firebaseUser)
-
-  //     // Save user to Firestore
-  //     await setDoc(doc(db, "users", firebaseUser.uid), {
-  //       id: firebaseUser.uid,
-  //       userName: user.userName,
-  //       email: firebaseUser.email,
-  //       photoUrl: firebaseUser.photoURL || null,
-  //       provider: "email",
-  //       createdAt: serverTimestamp(),
-  //     });
-
-
-
-  //     enqueueSnackbar("Registered Successfully!", { autoHideDuration: 3000 });
-  //   //   navigate("/");
-  //   } catch (error: any) {
-  //     console.error(error);
-  //     enqueueSnackbar(error.message, { autoHideDuration: 3000 });
-  //   }
-  // };
-
-  const onSubmit = async (user:any)=>{
-    try{
-      const User = {
-      id:Date.now(),
-      username:user.userName,
-      email:user.email,
-      Password:user.password,
-      role:user.role
-    }
-    const response = await register(User)
-    if(response.message=="user register sucessfully"){
-      router.push('/auth/login')
-    }
-    console.log(response)
-  }catch(error:any){
-    console.log("error is as ",error)
-    }
-
+  if (res.meta.requestStatus === "fulfilled") {
+    enqueueSnackbar("Registered Successfully!", { variant: "success" });
+    router.push("/auth/login");
+  } else {
+    enqueueSnackbar(res.payload || "Registration Failed", { variant: "error" });
   }
-  const signInWithGoogle = async () => {
-    try {
-      const firebaseResponse = await signInWithPopup(auth, googleProvider);
-      const firebaseUser = firebaseResponse.user;
-      console.log(firebaseUser)
+};
 
-      const User = {
-        id:Date.now(),
-        username:firebaseUser.displayName||null,
-        email:firebaseUser.email,
-        Password:'password',
-        role:'user'
-      }
+const googleSign = async () => {
+  const firebaseUser = (await signInWithPopup(auth, googleProvider)).user;
 
-      const response = await siginwithgoogle(User)
-      console.log(response)
-      if(response.message){
-        router.push('/dashboard')
-      }
-      enqueueSnackbar("Signed in with Google!", { autoHideDuration: 3000 });
-    } catch (error: any) {
-      console.error("Google Sign-in Error:", error);
-      enqueueSnackbar(error.message, { autoHideDuration: 3000 });
-    }
+  const user = {
+    email: firebaseUser.email,
+    password:'password',
+    role: "user",
   };
+
+  const res = await dispatch(googleLogin(user));
+
+  if (res.meta.requestStatus === "fulfilled") {
+    enqueueSnackbar("Google Login Success!", { variant: "success" });
+    router.push("/dashboard");
+  } else {
+    enqueueSnackbar(res.payload || "Google Login Failed", { variant: "error" });
+  }
+};
+
 
   return (
     <>
@@ -264,7 +222,24 @@ function Register() {
           </Typography>
 
             <Button
-              onClick={signInWithGoogle}
+              onClick={async () => {
+                const firebaseResponse = await signInWithPopup(auth, googleProvider);
+                const firebaseUser = firebaseResponse.user;
+
+                const user = {
+                  email: firebaseUser.email,
+                  role: "user",
+                };
+
+                const res = await dispatch(googleLogin(user));
+
+                if (res.meta.requestStatus === "fulfilled") {
+                  enqueueSnackbar("Signed in with Google!", { variant: "success" });
+                  router.push("/dashboard");
+                } else {
+                  enqueueSnackbar("Google Login Failed", { variant: "error" });
+                }
+              }}
               variant="contained"
               fullWidth
               sx={{ mt: 2, height:'4vh',backgroundColor:'orangered'}}

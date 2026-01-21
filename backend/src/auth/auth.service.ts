@@ -1,41 +1,63 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { UpdateAuthDto } from './dto/update-auth.dto';
-import { users } from './static/authdb';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from './entities/auth.entity';
 
 @Injectable()
 export class AuthService {
-  register(createAuthDto: CreateAuthDto) {
-    const {email,password}= createAuthDto
-    const user = users.find((user)=>user.email==email)
-    if(user){
-      throw new HttpException({message:'Email already existed',status:409},409)
+  constructor(
+    @InjectRepository(User)
+    private userRepo: Repository<User>,
+  ) {}
+
+  async register(createAuthDto: CreateAuthDto) {
+    const { email } = createAuthDto;
+
+    const existingUser = await this.userRepo.findOne({ where: { email } });
+    if (existingUser) {
+      throw new HttpException(
+        { message: 'Email already exists', status: 409 },
+        409,
+      );
     }
 
-    users.push(createAuthDto)
+    const newUser = this.userRepo.create(createAuthDto);
+    await this.userRepo.save(newUser);
 
-    return {message:'user register sucessfully'};
+    return { message: 'User registered successfully' };
   }
-  login(createAuthDto: CreateAuthDto) {
-    const {email,password}= createAuthDto
-    const user = users.find((user)=>user.email==email && user.password==password)
-    if(!user){
-      throw new HttpException({message:'invalid credential','status':404},404)
+
+  async login(createAuthDto: CreateAuthDto) {
+    const { email, password } = createAuthDto;
+
+    const user = await this.userRepo.findOne({
+      where: { email, password },
+    });
+
+    if (!user) {
+      throw new HttpException(
+        { message: 'Invalid credentials', status: 404 },
+        404,
+      );
     }
 
     return user;
   }
 
-  siginwithGoogle(createAuthDto: CreateAuthDto){
-    const {email,password}= createAuthDto
-    const user = users.find((user)=>user.email==email)
-    if(user){
-      return {message:'signing in'}
+  async siginwithGoogle(createAuthDto: CreateAuthDto) {
+    const { email } = createAuthDto;
+
+    const user = await this.userRepo.findOne({ where: { email } });
+
+    if (user) {
+      return { message: 'Signing in' };
     }
-    users.push(createAuthDto)
-    return {message :'register succesfully'}
 
+    await this.userRepo.save(createAuthDto);
 
+    return { message: 'Registered successfully' };
   }
 
   findAll() {

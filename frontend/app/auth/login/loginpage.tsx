@@ -16,9 +16,8 @@ import { auth, googleProvider, db } from '../../firebase/firebase';
 import { signInWithPopup } from 'firebase/auth';
 import { collection, addDoc, serverTimestamp, getDocs, query, where, setDoc, doc, updateDoc } from "firebase/firestore";
 import Link from 'next/link'
-import { loginUser } from '../../redux/slices/authSlice';
+import { googleLogin, loginUser } from '../../redux/slices/authSlice';
 import { WidthFull } from '@mui/icons-material';
-import { siginwithgoogle } from '@/app/service/authApi';
 
 
 
@@ -60,50 +59,41 @@ function Login() {
     },
   });
 
-  useEffect(()=>{
-    if(isLoggedIn && currentUser){
-      router.push("/dashboard")
-    }
-  },[isLoggedIn,currentUser])
-
-
-  const onSubmit = async (user:any) => {
-
-
-    console.log('fetchh',JSON.stringify(user))
-    await dispatch(loginUser(user))
-    if(error){
-      enqueueSnackbar(error, { autoHideDuration: 3000 });
-
-    }
-
+useEffect(() => {
+  if (isLoggedIn && currentUser) {
+    router.push("/dashboard");
   }
-    const signInWithGoogle = async () => {
-      try {
-        const firebaseResponse = await signInWithPopup(auth, googleProvider);
-        const firebaseUser = firebaseResponse.user;
-        console.log(firebaseUser)
-  
-        const User = {
-          id:Date.now(),
-          username:firebaseUser.displayName||null,
-          email:firebaseUser.email,
-          Password:'password',
-          role:'user'
-        }
-  
-        const response = await siginwithgoogle(User)
-        if(response.message){
-        router.push('/dashboard')
-      }
-        console.log(response)
-  
-        enqueueSnackbar("Signed in with Google!", { autoHideDuration: 3000 });
-      } catch (error: any) {
-        console.error("Google Sign-in Error:", error);
-        enqueueSnackbar(error.message, { autoHideDuration: 3000 });
-      }
-    };
+}, [isLoggedIn, currentUser, router]);
+
+const onSubmit = async (data: any) => {
+  const res = await dispatch(loginUser(data));
+
+  if (res.meta.requestStatus === "fulfilled") {
+    enqueueSnackbar("Logged In Successfully", { variant: "success" });
+    router.push("/dashboard");
+  } else {
+    enqueueSnackbar(res.payload || "Login Failed", { variant: "error" });
+  }
+};
+
+const signInWithGoogle = async () => {
+  const firebaseUser = (await signInWithPopup(auth, googleProvider)).user;
+
+  const user = {
+    email: firebaseUser.email,
+    role: "user",
+  };
+
+  const res = await dispatch(googleLogin(user));
+
+  if (res.meta.requestStatus === "fulfilled") {
+    enqueueSnackbar("Signed in with Google!", { variant: "success" });
+    router.push("/dashboard");
+  } else {
+    enqueueSnackbar(res.payload || "Google Login Failed", { variant: "error" });
+  }
+};
+
 
   return (
     <>

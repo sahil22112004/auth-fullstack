@@ -1,7 +1,12 @@
-export default function dahboardpage(){
+import Dashboard from "./dashboard"
+// import ProtectedRoute from "../components/protectedRoute"
+
+
+export default function dashboardpage(){
     return (
         <>
-        <h1>hello</h1>
+        <Dashboard/>
+    
         </>
     )
 }
