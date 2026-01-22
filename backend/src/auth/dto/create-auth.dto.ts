@@ -10,6 +10,10 @@ export class CreateAuthDto {
 
     @IsString({message:'enter only string'})
     @IsNotEmpty({message:'this field cannot be emty'})
+    username:string
+
+    @IsString({message:'enter only string'})
+    @IsNotEmpty({message:'this field cannot be emty'})
     password:string
 
     @IsString({message:'enter only string'})

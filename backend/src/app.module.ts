@@ -4,6 +4,8 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './auth/entities/auth.entity';
+import { ProductsModule } from './products/products.module';
+import { Product } from './products/entities/product.entity';
 
 
 
@@ -14,12 +16,13 @@ import { User } from './auth/entities/auth.entity';
     host: 'localhost',
     port: 5432,
     username: 'postgres',
-    password: '',
-    database: '',
-    entities: [User],
+    password: 'admin',
+    database: 'auth',
+    entities: [User,Product],
     synchronize: false
   }),
-    AuthModule],
+    AuthModule,
+    ProductsModule],
   controllers: [AppController],
   providers: [AppService],
 })

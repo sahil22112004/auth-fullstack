@@ -47,17 +47,19 @@ export class AuthService {
   }
 
   async siginwithGoogle(createAuthDto: CreateAuthDto) {
+    console.log("google",createAuthDto)
     const { email } = createAuthDto;
 
     const user = await this.userRepo.findOne({ where: { email } });
 
     if (user) {
-      return { message: 'Signing in' };
+      return { message: 'Signing in' , user:user};
     }
 
-    await this.userRepo.save(createAuthDto);
+    const newUser = this.userRepo.create(createAuthDto);
+    await this.userRepo.save(newUser);
 
-    return { message: 'Registered successfully' };
+    return { message: 'Registered successfully',user:newUser };
   }
 
   findAll() {
