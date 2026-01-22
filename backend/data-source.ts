@@ -5,6 +5,7 @@ import { Product } from './src/products/entities/product.entity';
 import { runSeeders, SeederOptions } from 'typeorm-extension';
 import UserSeeder from './src/database/seeds/user.seeder';
 import UserFactory from './src/database/factories/user.factory';
+import { Category } from './src/category/entities/category.entity';
 
 
 const datasource :DataSourceOptions & SeederOptions={
@@ -12,9 +13,9 @@ const datasource :DataSourceOptions & SeederOptions={
   host: 'localhost',
   port: 5432,
   username: 'postgres',
-  password: 'admin',
+  password: '1104',
   database: 'auth',
-  entities: [User,Product],
+  entities: [User,Product,Category],
   migrations: ['src/migrations/*.ts'],
   synchronize: false, 
   factories: [UserFactory],

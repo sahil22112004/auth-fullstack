@@ -7,21 +7,23 @@ export default class UserSeeder implements Seeder {
         dataSource: DataSource,
         factoryManager: SeederFactoryManager
     ): Promise<any> {
-        // const repository =  dataSource.getRepository(User);
-        // await repository.insert([
-        //     {
-        //         username: 'Caleb',
-        //         email: 'Barrows',
-        //         password: 'caleb.barrows@gmail.com',
-        //         status:'admin'
-        //     }
-        // ]);
+        const repository =  dataSource.getRepository(User);
+        const adminExists = await repository.findOne({
+             where: { email: 'admin@gmail.com' },
+            });
 
-        // ---------------------------------------------------
+            if (!adminExists) {
+            await repository.insert({
+                username: 'Admin',
+                email: 'admin@gmail.com',
+                role: 'admin',
+                password: 'admin123'
+                });
+            }
 
-        const userFactory = factoryManager.get(User);
-        // save 1 factory generated entity, to the database
-        await userFactory.save();
+        // const userFactory = factoryManager.get(User);
+        // // save 1 factory generated entity, to the database
+        // await userFactory.save();
 
 
     }

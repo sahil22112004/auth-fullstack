@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -9,108 +9,86 @@ import { productQuery } from './interface/productqueryInterface';
 @Injectable()
 export class ProductsService {
   constructor(
-      @InjectRepository(Product)
-      private productRepo: Repository<Product>,
-    ) {}
-  async create(createProductDto: CreateProductDto) {
-    console.log(createProductDto)
-    const {productName,price,photoUrl,description,userId,category,subcategory}=  createProductDto
+    @InjectRepository(Product)
+    private productRepo: Repository<Product>,
+  ) {}
 
-    const product = {
-      productName:productName,
-      price:price,
-      photoUrl:photoUrl,
-      description:description,
-      userId:userId,
-      category:category,
-      subcategory:subcategory,
-      rating:0
-    }
-    const addProduct = this.productRepo.create({...product})
-    await this.productRepo.save(addProduct)
-    return {message:'successfuly added product'};
+  // CREATE PRODUCT
+  async create(createProductDto: CreateProductDto) {
+    const { productName, price, photoUrl, description, userId, categoryId } = createProductDto;
+
+    const product = this.productRepo.create({
+      productName,
+      price,
+      photoUrl,
+      description,
+      userId: +userId,        
+      categoryId: +categoryId, 
+      rating: 0,
+    });
+
+    const savedProduct = await this.productRepo.save(product);
+    return { message: 'successfuly added product', product: savedProduct };
   }
 
-async findAll(queryDto: productQuery) {
-  const { offset = 0, limit = 10, category, subcategory } = queryDto;
-  let products = await this.productRepo.find();
+  async findAll(query: productQuery) {
+    const { productName, categoryId, limit = 10, offset = 0 } = query;
 
-  if (category) {
-  products = products.filter((product) => product.category === category);
-}
-if (subcategory) {
-  products = products.filter((product) => product.subcategory === subcategory);
-}
+    const productdata = this.productRepo.createQueryBuilder('product');
 
-const total = products.length;
+    if (productName) {
+      productdata.andWhere('LOWER(product.productName) LIKE LOWER(:productName)', {
+        productName: `%${productName}%`,
+      });
+    }
 
-const paginatedproducts = await this.productRepo.find({
-  skip: offset,
-  take: limit,
-});
+    if (categoryId) {
+      productdata.andWhere('product.categoryId = :categoryId', { categoryId });
+    }
 
-  return {products:paginatedproducts,total:total}
-}
+    productdata.skip(offset).take(limit);
+
+    const [products, total] = await productdata.getManyAndCount();
+
+    return { total, limit, offset, products };
+  }
 
   async findOne(id: number) {
-    console.log(id)
-    const product = await this.productRepo.findOne({
-      where: { id },});
+    const product = await this.productRepo.findOne({ where: { id } });
+
     if (!product) {
-      throw new HttpException({ message: "product not found" }, 404);
+      throw new NotFoundException('product not found');
     }
-    return product;;
+
+    return product;
   }
 
   async update(id: number, updateProductDto: UpdateProductDto) {
-    const updateproduct = await this.productRepo.findOne({where: { id }});
-    if (!updateproduct) {
-      throw new HttpException({ message: "product not found" }, 404)
+    const product = await this.productRepo.findOne({ where: { id } });
+    if (!product) {
+      throw new NotFoundException('product not found');
     }
-    
-    await this.productRepo.update(id,updateProductDto)
-    return {message:'upadate successfully'};
+
+    if (updateProductDto.userId) {
+      (updateProductDto as any).userId = +updateProductDto.userId;
+    }
+    if (updateProductDto.categoryId) {
+      (updateProductDto as any).categoryId = +updateProductDto.categoryId;
+    }
+
+    Object.assign(product, updateProductDto);
+    const updatedProduct = await this.productRepo.save(product);
+
+    return { message: 'update successfully', product: updatedProduct };
   }
 
   async remove(id: number) {
-    const deletedproduct = await this.productRepo.findOne({where: { id }});
-    if (!deletedproduct) {
-      throw new HttpException({ message: "product not found" }, 404)
+    const product = await this.productRepo.findOne({ where: { id } });
+    if (!product) {
+      throw new NotFoundException('product not found');
     }
-    await this.productRepo.delete(id)
-    return {message:'product Delete Succesfully'};
+
+    await this.productRepo.delete(id);
+    return { message: 'product delete successfully', product };
   }
 }
-
-
-
-
-// async findAll(queryDto: ProductQueryDto) {
-//   const { page, limit, category, subcategory } = queryDto;
-//   let products = await this.productRepo.find();
-//   console.log(products);
-//   if (category) {
-//   products = products.filter((p) => p.category === category);
-// }
-// if (subcategory) {
-//   products = products.filter((p) => p.subcategory === subcategory);
-// }
-// const total = products.length;
-//  if (limit !== undefined && page !== undefined) {
-//    const offset = page - 1 * limit;
-//    const paginatedproducts = await this.productRepo.find({
-//     skip: offset,
-//     take: limit,
-//     });
-//     if (limit !== undefined && page !== undefined) {
-//       const offset = page - 1 * limit;
-//       const paginatedproducts = products.slice(offset, offset + limit);
-//       return {
-//         paginatedproducts,
-//         total,
-//         offset: Number(offset),
-//         limit: Number(limit),
-//       };
-//     }
-//     return products
-//   }

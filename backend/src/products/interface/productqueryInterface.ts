@@ -1,6 +1,6 @@
 export interface productQuery {
-    category?:string,
-    subcategory?:string,
-    limit?: number;
-    offset?: number;
+  productName?: string;
+  categoryId?: string | number;
+  limit?: number;
+  offset?: number;
 }

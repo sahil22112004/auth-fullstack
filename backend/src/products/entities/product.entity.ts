@@ -1,35 +1,38 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { User } from '../../auth/entities/auth.entity';
+import { Category } from '../../category/entities/category.entity';
 
 @Entity('products')
 export class Product {
   @PrimaryGeneratedColumn()
   id: number;
 
-//   @Column({ unique: true })
-//   email: string;
-
   @Column()
   productName: string;
-
-  @Column()
-  category: string;
-
-  @Column()
-  subcategory: string;
 
   @Column()
   price: number;
 
   @Column()
-  rating:number;
+  rating: number;
 
   @Column()
   description: string;
 
   @Column()
-  photoUrl:string
+  photoUrl: string;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
   @Column()
-  userId:string
+  userId: number;
 
+  @ManyToOne(() => Category)
+  @JoinColumn({ name: 'categoryId' })
+  category: Category;
+
+  @Column()
+  categoryId: number;
 }

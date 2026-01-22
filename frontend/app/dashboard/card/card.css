@@ -1,0 +1,83 @@
+/* Main card container */
+.card {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); 
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  width: 300px;
+  border-radius: 12px; 
+  overflow: hidden;
+  font-family: system-ui, -apple-system, sans-serif; 
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  transform: translateY(-5px); 
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.container {
+  padding: 20px; 
+  flex-grow: 1;  
+}
+
+.container h4 {
+  margin: 0 0 10px 0;
+  font-size: 1.4rem;
+  color: #1a1a1a;
+}
+
+.container p {
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.addCartButton, .viewButton {
+  flex: 1;               
+  margin: 10px;           
+  padding: 10px 5px;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.85rem;
+}
+
+.addCartButton {
+  background-color: #007bff;
+  color: white;
+  margin-right: 5px;      
+  margin-left: 20px;     
+  margin-bottom: 20px;
+}
+
+.viewButton {
+  background-color: #f8f9fa;
+  color: #333;
+  border: 1px solid #ddd;
+  margin-left: 5px;       
+  margin-right: 20px;   
+  margin-bottom: 20px;
+}
+
+.addCartButton:hover { background-color: #0056b3; }
+.viewButton:hover { background-color: #e2e6ea; }
+
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}

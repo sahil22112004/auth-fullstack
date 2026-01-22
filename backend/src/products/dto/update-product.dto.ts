@@ -1,41 +1,28 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateProductDto } from './create-product.dto';
-import {  IsString, IsEmail,IsNotEmpty, IsNumber, IsNumberString } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsNumberString } from 'class-validator';
 
+export class UpdateProductDto {
 
-export class UpdateProductDto extends PartialType(CreateProductDto) {
+  @IsString()
+  @IsNotEmpty()
+  productName: string;
 
+  @IsNumber()
+  @IsNotEmpty()
+  price: number;
 
-    
-        @IsString({message:'enter only string'})
-        @IsNotEmpty({message:'this field cannot be emty'})
-        productName:string
-    
-        @IsString({message:'enter only string'})
-        @IsNotEmpty({message:'this field cannot be emty'})
-        category:string
-    
-        @IsString({message:'enter only string'})
-        @IsNotEmpty({message:'this field cannot be emty'})
-        subcategory:string
-    
-        // @IsString({message:'enter only string'})
-        // @IsNotEmpty({message:'this field cannot be emty'})
-        // product_id:string
-    
-        @IsNumber()
-        @IsNotEmpty({message:'this field cannot be emty'})
-        price:number
-    
-        @IsNumberString()
-        @IsNotEmpty({message:'this field cannot be emty'})
-        userId:string
-    
-        @IsString({message:'enter only string'})
-        @IsNotEmpty({message:'this field cannot be emty'})
-        description:string
-    
-        @IsString({message:'enter only string'})
-        @IsNotEmpty({message:'this field cannot be emty'})
-        photoUrl:string
+  @IsNumberString()
+  @IsNotEmpty()
+  userId: string;
+
+  @IsNumberString()
+  @IsNotEmpty()
+  categoryId: string; 
+
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @IsString()
+  @IsNotEmpty()
+  photoUrl: string;
 }

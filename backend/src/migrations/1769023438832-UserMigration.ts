@@ -1,14 +1,49 @@
-import { MigrationInterface, QueryRunner } from "typeorm";
+import { MigrationInterface, QueryRunner, Table } from "typeorm";
 
 export class UserMigration1769023438832 implements MigrationInterface {
-    name = 'UserMigration1769023438832'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE "user" ("id" SERIAL NOT NULL, "email" character varying NOT NULL,"username" character varying NOT NULL, "password" character varying NOT NULL, "role" character varying NOT NULL, CONSTRAINT "UQ_e12875dfb3b1d92d7d7c5377e22" UNIQUE ("email"), CONSTRAINT "PK_cace4a159ff9f2512dd42373760" PRIMARY KEY ("id"))`);
+        await queryRunner.createTable(
+            new Table({
+                name: "users",
+                columns: [
+                    {
+                        name: "id",
+                        type: "int",
+                        isPrimary: true,
+                        isGenerated: true,
+                        generationStrategy: "increment"
+                    },
+                    {
+                        name: "email",
+                        type: "varchar",
+                        isNullable: false,
+                        isUnique: true
+                    },
+                    {
+                        name: "username",
+                        type: "varchar",
+                        isNullable: false,
+                        isUnique: true
+                    },
+                    {
+                        name: "password",
+                        type: "varchar",
+                        isNullable: false
+                    },
+                    {
+                        name: "role",
+                        type: "varchar",
+                        isNullable: false
+                    }
+                ]
+            }),
+            true
+        );
     }
 
     public async down(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`DROP TABLE "user"`);
+        await queryRunner.dropTable("users");
     }
 
 }
