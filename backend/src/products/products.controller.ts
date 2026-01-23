@@ -12,13 +12,13 @@ export class ProductsController {
 
   @Post()
   @UseInterceptors(
-    FilesInterceptor("images", 5, {
+    FilesInterceptor("photoUrl", 5, {
       storage: productImageStorage,
     }),
   )
   create(@UploadedFiles() files: Express.Multer.File[],  @Body() createProductDto: CreateProductDto) {
-    console.log(createProductDto)
-    return this.productsService.create(createProductDto,files);
+    console.log("ygygugghg",createProductDto)
+    // return this.productsService.create(createProductDto,files);
   }
 
   @Get()

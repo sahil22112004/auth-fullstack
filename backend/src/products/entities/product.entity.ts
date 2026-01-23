@@ -11,7 +11,7 @@ export class Product {
   productName: string;
 
   @Column()
-  price: number;
+  price: string;
 
   @Column()
   rating: number;

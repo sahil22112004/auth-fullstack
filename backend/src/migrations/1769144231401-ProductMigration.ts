@@ -20,7 +20,7 @@ export class ProductMigration1769144231401 implements MigrationInterface {
                 },
                 {
                     name: "price",
-                    type: "int",
+                    type: "varchar",
                     isNullable: false,
                 },
                 {

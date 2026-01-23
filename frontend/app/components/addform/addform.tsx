@@ -46,14 +46,20 @@ export default function AddProduct() {
   }, []);
 
   const onSubmit = async (product: ProductFormData) => {
+    console.log(product)
     const formData = new FormData();
     const userId :any = currentUser?.id || "1";
 
     formData.append("userId", userId);
+    console.log(formData)
     formData.append("productName", product.productName);
+    console.log(formData)
     formData.append("price", String(product.price));
+    console.log(formData)
     formData.append("description", product.description);
+    console.log(formData)
     formData.append("categoryId", product.categoryId);
+    console.log(formData)
 
     const files = product.photoUrl as unknown as FileList;
     if (files && files.length > 0) {

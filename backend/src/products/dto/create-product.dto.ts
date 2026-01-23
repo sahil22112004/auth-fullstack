@@ -6,9 +6,9 @@ export class CreateProductDto {
   @IsNotEmpty()
   productName: string;
 
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  price: number;
+  price: string;
 
   @IsNumberString()
   @IsNotEmpty()
@@ -24,5 +24,6 @@ export class CreateProductDto {
 
 
   @IsOptional()
-  photoUrl?: string[];
+  @IsString()
+  photoUrl?: any[];
 }
