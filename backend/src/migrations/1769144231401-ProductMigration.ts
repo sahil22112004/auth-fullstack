@@ -1,6 +1,6 @@
 import { MigrationInterface, QueryRunner, Table, TableForeignKey } from "typeorm";
 
-export class ProductMigration1769107382556 implements MigrationInterface {
+export class ProductMigration1769144231401 implements MigrationInterface {
 
     public async up(queryRunner: QueryRunner): Promise<void> {
         await queryRunner.createTable(new Table({ 
@@ -36,8 +36,9 @@ export class ProductMigration1769107382556 implements MigrationInterface {
                 },
                 {
                     name: "photoUrl",
-                    type: "varchar",
-                    isNullable: false,
+                    type: "text",
+                    isArray: true,
+                    isNullable: true,
                 },
                 {
                     name: "userId",
@@ -78,3 +79,4 @@ export class ProductMigration1769107382556 implements MigrationInterface {
     }
 
 }
+

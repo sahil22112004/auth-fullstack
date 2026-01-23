@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { apiLogin, apiRegister, apiGoogleLogin } from '@/app/service/authApi';
 
-interface User {
+export interface User {
   id?: number | string;
   email: string;
   role: string;
@@ -22,7 +22,6 @@ const initialState: AuthState = {
   isLoggedIn: false,
 };
 
-// THUNKS
 export const loginUser = createAsyncThunk(
   'auth/loginUser',
   async (user: any, { rejectWithValue }) => {
@@ -67,7 +66,6 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // LOGIN
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -84,7 +82,6 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
 
-      // REGISTER
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -98,7 +95,6 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
 
-      // GOOGLE LOGIN
       .addCase(googleLogin.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -106,7 +102,7 @@ const authSlice = createSlice({
       .addCase(googleLogin.fulfilled, (state, action) => {
         state.loading = false;
         state.isLoggedIn = true;
-        state.currentUser = action.payload;
+        state.currentUser = action.payload.user;
         state.error = null;
       })
       .addCase(googleLogin.rejected, (state, action: any) => {

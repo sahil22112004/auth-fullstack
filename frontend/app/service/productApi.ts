@@ -1,67 +1,59 @@
-const BASE_URL = "http://localhost:3000";
-
 export async function fetchProducts(
   offset: number,
   limit: number,
   productName?: string,
   category?: string
 ) {
-  let url = `http://localhost:4000/products?offset=${offset}&limit=${limit}`
+  let url = `http://localhost:3000/products?offset=${offset}&limit=${limit}`
 
   if (productName) url += `&productName=${productName}`
-  if (category) url += `&category=${category}`
+  if (category) url += `&categoryId=${category}`
 
   const res = await fetch(url)
   const data = await res.json()
+  console.log(data)
   return data.products || []   
 }
 
 
 export async function fetchProductById(id: string) {
-  const res = await fetch(`${BASE_URL}/products/${id}`);
+  const res = await fetch(`http://localhost:3000/products/${id}`);
   return await res.json();
 }
 
-export async function addProduct(payload: any, token: string) {
-  const res = await fetch(`${BASE_URL}/products`, {
+export async function addProduct(product: any) {
+  const res = await fetch(`http://localhost:3000/products`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(product)
   });
-  return await res.json();
+
+  return res;
 }
 
-export async function updateProduct(id: string, payload: any, token: string) {
-  const res = await fetch(`${BASE_URL}/products/${id}`, {
+export async function updateProduct(id: string, product: any) {
+  const res = await fetch(`http://localhost:3000/products/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(product)
   });
   return await res.json();
 }
 
-export async function deleteProduct(id: string, token: string) {
-  const res = await fetch(`${BASE_URL}/products/${id}`, {
+export async function deleteProduct(id: string) {
+  const res = await fetch(`http://localhost:3000/products/${id}`, {
     method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
   });
   return await res.json();
 }
 
 export async function fetchCategories() {
-  const res = await fetch(`${BASE_URL}/categories`);
+  const res = await fetch("http://localhost:3000/category");
+  if (!res.ok) throw new Error("Failed to load categories");
   return await res.json();
 }
 
-export async function fetchSubcategories(categoryId: string) {
-  const res = await fetch(`${BASE_URL}/categories/${categoryId}/subcategories`);
-  return await res.json();
-}

@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { LoginAuthDto } from './dto/login-auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/auth.entity';
@@ -29,8 +29,8 @@ export class AuthService {
     return { message: 'User registered successfully' };
   }
 
-  async login(createAuthDto: CreateAuthDto) {
-    const { email, password } = createAuthDto;
+  async login(LoginAuthDto: LoginAuthDto) {
+    const { email, password } = LoginAuthDto;
 
     const user = await this.userRepo.findOne({
       where: { email, password },
@@ -70,7 +70,7 @@ export class AuthService {
     return `This action returns a #${id} auth`;
   }
 
-  update(id: number, updateAuthDto: UpdateAuthDto) {
+  update(id: number, updateAuthDto: LoginAuthDto) {
     return `This action updates a #${id} auth`;
   }
 

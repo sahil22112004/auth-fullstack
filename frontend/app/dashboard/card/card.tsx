@@ -7,9 +7,9 @@ function Card({product}:{product:any}) {
 
   return (
     <div className="card">
-      <img src={product.thumbnail} alt={product.title} style={{ width: '100%' }} />
+      <img src={product.photoUrl} alt={product.title} style={{ width: '100%' }} />
       <div className="container">
-        <h4><b>{product.title}</b></h4>
+        <h4><b>{product.productName}</b></h4>
         <p>{product.description}</p>
         <h2>${product.price}</h2>
       </div>

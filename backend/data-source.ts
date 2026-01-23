@@ -13,7 +13,7 @@ const datasource :DataSourceOptions & SeederOptions={
   host: 'localhost',
   port: 5432,
   username: 'postgres',
-  password: '1104',
+  password: 'admin',
   database: 'auth',
   entities: [User,Product,Category],
   migrations: ['src/migrations/*.ts'],

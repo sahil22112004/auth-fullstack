@@ -18,13 +18,10 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-     "typeorm": "ts-node ./node_modules/typeorm/cli",
-  "migration:run": "npx ts-node ./node_modules/typeorm/cli migration:run -d ./data-source.ts",
-  "migration:revert": "npx ts-node ./node_modules/typeorm/cli migration:revert -d ./data-source.ts",
-  "migration:generate": "npx ts-node ./node_modules/typeorm/cli migration:generate src/migrations/NewMigration -d ./data-source.ts"
-
-
-  
+    "typeorm": "ts-node ./node_modules/typeorm/cli",
+    "migration:run": "npx ts-node ./node_modules/typeorm/cli migration:run -d ./data-source.ts",
+    "migration:revert": "npx ts-node ./node_modules/typeorm/cli migration:revert -d ./data-source.ts",
+    "migration:generate": "npx ts-node ./node_modules/typeorm/cli migration:generate src/migrations/NewMigration -d ./data-source.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -48,6 +45,7 @@
     "@nestjs/testing": "^11.0.1",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
+    "@types/multer": "^2.0.0",
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
     "eslint": "^9.18.0",

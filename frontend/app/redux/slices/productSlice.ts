@@ -4,8 +4,9 @@ import { fetchProducts } from '../../service/productApi'
 export const loadProducts = createAsyncThunk(
   'products',
   async (props: { offset: number; productName: string; category: string }) => {
-    const list = await fetchProducts(props.offset, 10, props.productName, props.category)
-    return list
+    console.log('working',props)
+    const products = await fetchProducts(props.offset, 10, props.productName, props.category)
+    return products
   }
 )
 

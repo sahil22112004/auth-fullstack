@@ -19,8 +19,8 @@ export class Product {
   @Column()
   description: string;
 
-  @Column()
-  photoUrl: string;
+  @Column("text", { array: true })
+  photoUrl: string[];
 
   @ManyToOne(() => User)
   @JoinColumn({ name: 'userId' })

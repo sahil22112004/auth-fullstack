@@ -10,37 +10,35 @@ import {
   setCategory
 } from "../redux/slices/productSlice"
 import { enqueueSnackbar } from "notistack"
+import { useRouter } from "next/navigation"
+import { logout } from "../redux/slices/authSlice"
 
 function Dashboard() {
+  const router = useRouter()
   const dispatch = useDispatch<AppDispatch>()
 
-  // Getting state from Redux
   const {
     products, loading, hasMore,
     offset, productName, category
   } = useSelector((state: RootState) => state.product)
 
-  // Load initial products
   useEffect(() => {
     dispatch(loadProducts({ offset: 0, productName: "", category: "" }))
   }, [])
 
-  // Search Handler
   function handleSearch(e: any) {
     const val = e.target.value
     dispatch(setSearch(val))
     dispatch(loadProducts({ offset: 0, productName: val, category }))
   }
 
-  // Category Select Handler
   function handleCategorySelect(e: any) {
-    const cat = e.target.value
-    dispatch(setCategory(cat))
-    dispatch(loadProducts({ offset: 0, productName, category: cat }))
-    if (cat) enqueueSnackbar(`Filtered by ${cat}`, { variant: "info" })
+    const category = e.target.value
+    dispatch(setCategory(category))
+    dispatch(loadProducts({ offset: 0, productName, category: category }))
+    if (category) enqueueSnackbar(`Filtered by ${category}`, { variant: "info" })
   }
 
-  // Infinite Scroll Logic
   function loadMore() {
     if (!loading && hasMore) {
       dispatch(loadProducts({ offset, productName, category }))
@@ -58,9 +56,17 @@ function Dashboard() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [offset, productName, category, loading, hasMore])
 
+  function handlelogout(){
+    dispatch(logout())
+    router.push('/auth/login')
+
+  }
+
+
+
+
   return (
     <>
-      {/* HEADER */}
       <header>
         <h1>DashBoard</h1>
 
@@ -71,7 +77,6 @@ function Dashboard() {
           onChange={handleSearch}
         />
 
-        {/* CATEGORY SELECT */}
         <select
           className="category-dropdown"
           value={category}
@@ -80,32 +85,43 @@ function Dashboard() {
           <option value="">All Categories</option>
 
           <optgroup label="Fashion">
-            <option value="Men's Wear">Men's Wear</option>
-            <option value="Women's Wear">Women's Wear</option>
-            <option value="Kids Wear">Kids Wear</option>
+            <option value="2">Men's Wear</option>
+            <option value="3">Women's Wear</option>
+            <option value="4">Kids Wear</option>
           </optgroup>
 
           <optgroup label="Electronics">
-            <option value="Mobiles">Mobiles</option>
-            <option value="Laptops">Laptops</option>
-            <option value="Audio">Audio</option>
+            <option value="5">Mobiles</option>
+            <option value="6">Laptops</option>
+            <option value="7">Audio</option>
           </optgroup>
 
           <optgroup label="Automobile">
-            <option value="Cars">Cars</option>
-            <option value="Bikes">Bikes</option>
-            <option value="Accessories">Accessories</option>
+            <option value="8">Cars</option>
+            <option value="9">Bikes</option>
+            <option value="10">Accessories</option>
           </optgroup>
 
           <optgroup label="Grocery">
-            <option value="Fruits">Fruits</option>
-            <option value="Vegetables">Vegetables</option>
-            <option value="Snacks">Snacks</option>
+            <option value="11">Fruits</option>
+            <option value="12">Vegetables</option>
+            <option value="13">Snacks</option>
           </optgroup>
         </select>
+
+        <div className="headerbtn">
+
+          <button className="addproductbtn" onClick={
+          ()=>router.push('/components/addform')
+        }>Add Product</button>
+
+        <button className="logoutbtn" onClick={handlelogout}>Log Out</button>
+        </div>
+
+        
+
       </header>
 
-      {/* PRODUCTS GRID */}
       <main>
         {products?.length > 0 ? (
           products.map((product: any) => <Card key={product.id} product={product} />)
@@ -114,7 +130,6 @@ function Dashboard() {
         )}
       </main>
 
-      {/* LOADING */}
       {loading && <p style={{ textAlign: "center" }}>Loading...</p>}
 
       <footer>Ecommerce site</footer>

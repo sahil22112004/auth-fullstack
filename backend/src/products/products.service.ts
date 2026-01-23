@@ -13,9 +13,11 @@ export class ProductsService {
     private productRepo: Repository<Product>,
   ) {}
 
-  // CREATE PRODUCT
-  async create(createProductDto: CreateProductDto) {
-    const { productName, price, photoUrl, description, userId, categoryId } = createProductDto;
+  async create(createProductDto: CreateProductDto ,files: Express.Multer.File[]) {
+    const { productName, price, description, userId, categoryId } = createProductDto;
+    const photoUrl =
+      files?.map((file) => `http://localhost:3000/uploads/${file.filename}`) ||
+      [];
 
     const product = this.productRepo.create({
       productName,
@@ -50,7 +52,7 @@ export class ProductsService {
 
     const [products, total] = await productdata.getManyAndCount();
 
-    return { total, limit, offset, products };
+    return { total, products };
   }
 
   async findOne(id: number) {
