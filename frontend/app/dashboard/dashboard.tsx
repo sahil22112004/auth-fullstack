@@ -1,4 +1,5 @@
-"use client"
+"use client";
+
 import { useEffect } from "react"
 import "./dashboard.css"
 import Card from "./card/card"
@@ -22,6 +23,8 @@ function Dashboard() {
     offset, productName, category
   } = useSelector((state: RootState) => state.product)
 
+  const user = useSelector((state: RootState) => state.auth.currentUser)
+
   useEffect(() => {
     dispatch(loadProducts({ offset: 0, productName: "", category: "" }))
   }, [])
@@ -33,10 +36,10 @@ function Dashboard() {
   }
 
   function handleCategorySelect(e: any) {
-    const category = e.target.value
-    dispatch(setCategory(category))
-    dispatch(loadProducts({ offset: 0, productName, category: category }))
-    if (category) enqueueSnackbar(`Filtered by ${category}`, { variant: "info" })
+    const val = e.target.value
+    dispatch(setCategory(val))
+    dispatch(loadProducts({ offset: 0, productName, category: val }))
+    if (val) enqueueSnackbar(`Filtered by ${val}`, { variant: "info" })
   }
 
   function loadMore() {
@@ -56,70 +59,95 @@ function Dashboard() {
     return () => window.removeEventListener("scroll", onScroll)
   }, [offset, productName, category, loading, hasMore])
 
-  function handlelogout(){
+  function handlelogout() {
     dispatch(logout())
     router.push('/auth/login')
-
   }
-
-
-
 
   return (
     <>
-      <header>
-        <h1>DashBoard</h1>
-
-        <input
-          type="text"
-          placeholder="Search products..."
-          value={productName}
-          onChange={handleSearch}
-        />
-
-        <select
-          className="category-dropdown"
-          value={category}
-          onChange={handleCategorySelect}
-        >
-          <option value="">All Categories</option>
-
-          <optgroup label="Fashion">
-            <option value="2">Men's Wear</option>
-            <option value="3">Women's Wear</option>
-            <option value="4">Kids Wear</option>
-          </optgroup>
-
-          <optgroup label="Electronics">
-            <option value="5">Mobiles</option>
-            <option value="6">Laptops</option>
-            <option value="7">Audio</option>
-          </optgroup>
-
-          <optgroup label="Automobile">
-            <option value="8">Cars</option>
-            <option value="9">Bikes</option>
-            <option value="10">Accessories</option>
-          </optgroup>
-
-          <optgroup label="Grocery">
-            <option value="11">Fruits</option>
-            <option value="12">Vegetables</option>
-            <option value="13">Snacks</option>
-          </optgroup>
-        </select>
-
-        <div className="headerbtn">
-
-          <button className="addproductbtn" onClick={
-          ()=>router.push('/components/addform')
-        }>Add Product</button>
-
-        <button className="logoutbtn" onClick={handlelogout}>Log Out</button>
+      <header className="navbar">
+        <div className="nav-left">
+          <h2 className="nav-logo">FlipKart</h2>
         </div>
 
-        
+        {user?.role === "seller" ? (
+          
+          <div className="nav-right">
+            <input
+                type="text"
+                placeholder="Search products..."
+                value={productName}
+                onChange={handleSearch}
+                className="nav-search"
+              />
+            <button className="nav-btn" onClick={() => router.push("/components/addform")}>
+              Add Product
+            </button>
 
+            <button className="nav-btn" onClick={() => router.push("/dashboard/sellerorder")}>
+              Orders
+            </button>
+
+            <button className="nav-btn nav-logout" onClick={handlelogout}>
+              Logout
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="nav-center">
+              <input
+                type="text"
+                placeholder="Search products..."
+                value={productName}
+                onChange={handleSearch}
+                className="nav-search"
+              />
+
+              <select
+                value={category}
+                onChange={handleCategorySelect}
+                className="nav-select"
+              >
+                <option value="">All Categories</option>
+
+                <optgroup label="Fashion">
+                  <option value="2">Men's Wear</option>
+                  <option value="3">Women's Wear</option>
+                  <option value="4">Kids Wear</option>
+                </optgroup>
+
+                <optgroup label="Electronics">
+                  <option value="5">Mobiles</option>
+                  <option value="6">Laptops</option>
+                  <option value="7">Audio</option>
+                </optgroup>
+
+                <optgroup label="Automobile">
+                  <option value="8">Cars</option>
+                  <option value="9">Bikes</option>
+                  <option value="10">Accessories</option>
+                </optgroup>
+
+                <optgroup label="Grocery">
+                  <option value="11">Fruits</option>
+                  <option value="12">Vegetables</option>
+                  <option value="13">Snacks</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <div className="nav-right">
+              <button className="nav-btn" onClick={() => router.push("/dashboard/cart")}>
+                Cart
+              </button>
+
+              <button className="nav-btn nav-logout" onClick={handlelogout}>
+                Logout
+              </button>
+            </div>
+          </>
+        )}
       </header>
 
       <main>
@@ -132,7 +160,7 @@ function Dashboard() {
 
       {loading && <p style={{ textAlign: "center" }}>Loading...</p>}
 
-      <footer>Ecommerce site</footer>
+      <footer className="footer">Ecommerce site</footer>
     </>
   )
 }

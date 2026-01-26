@@ -10,11 +10,13 @@ export const apiLogin = async (user: any) => {
 };
 
 export const apiRegister = async (user: any) => {
+  console.log('working')
   const res = await fetch('http://localhost:3000/auth/register', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(user),
   });
+  
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || 'Register failed');
   return data;

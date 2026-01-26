@@ -13,6 +13,7 @@ export class AuthController {
   }
   @Post('register')
   register(@Body() createAuthDto: CreateAuthDto) {
+    console.log('working',createAuthDto)
     return this.authService.register(createAuthDto);
   }
   @Post('signInWithGoogle')

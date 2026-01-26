@@ -1,143 +1,99 @@
 'use client'
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Box, TextField, Button, Typography, Paper, InputAdornment, IconButton,MenuItem } from "@mui/material";
+import { TextField, Button, Typography, InputAdornment, IconButton, MenuItem } from "@mui/material";
 import * as z from "zod";
 import { useSnackbar } from "notistack";
 import { useDispatch, useSelector } from "react-redux";
-// import { useNavigate } from "react-router";
-import { createUserWithEmailAndPassword, signInWithPopup, } from "firebase/auth";
-import { auth, googleProvider, db } from "../../firebase/firebase";
-import { collection, addDoc, serverTimestamp, getDocs, query, where, doc, setDoc, updateDoc } from "firebase/firestore";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../../firebase/firebase";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { useState } from "react";
 import Link from "next/link";
-import { Password } from "@mui/icons-material";
-import { useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation';
 import { googleLogin, registerUser } from "@/app/redux/slices/authSlice";
 import { AppDispatch, RootState } from "@/app/redux/store";
-
+import './register.css';
 
 function Register() {
-//   const navigate = useNavigate();
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
   const dispatch = useDispatch<AppDispatch>();
   const [showPassword, setShowPassword] = useState(false);
-  const {error,isLoggedIn,loading,currentUser} = useSelector((state:RootState)=>state.auth)
-
+  const { isLoggedIn, currentUser } = useSelector((state: RootState) => state.auth);
 
   const signupSchema = z.object({
-    userName: z.string().min(1, "User Name is required"),
-    role:z
-    .string()
-    .min(1, { message: "This field has to be filled." }),
-    email: z
-      .string()
-      .min(1, { message: "Email is required." })
-      .email("Invalid email address."),
-    password: z
-      .string()
-      .trim()
-      .min(6, "Password must be at least 6 characters"),
+    username: z.string().min(1, "User Name is required"),
+    role: z.string().min(1, { message: "Role is required." }),
+    email: z.string().min(1, { message: "Email is required." }).email("Invalid email address."),
+    password: z.string().trim().min(6, "Password must be at least 6 characters"),
   });
 
   type SignupForm = z.infer<typeof signupSchema>;
 
-  const {
-    control,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SignupForm>({
+  const { control, handleSubmit, formState: { errors } } = useForm<SignupForm>({
     resolver: zodResolver(signupSchema),
-    defaultValues: {
-      userName: "",
-      email: "",
-      password: "",
-      role:''
-    },
+    defaultValues: { username: "", email: "", password: "", role: "" },
   });
 
-
-const onSubmit = async (data: any) => {
-  const res = await dispatch(registerUser(data));
-
-  if (res.meta.requestStatus === "fulfilled") {
-    enqueueSnackbar("Registered Successfully!", { variant: "success" });
-    router.push("/auth/login");
-  } else {
-    enqueueSnackbar(res.payload || "Registration Failed", { variant: "error" });
-  }
-};
-
-const googleSign = async () => {
-  const firebaseUser = (await signInWithPopup(auth, googleProvider)).user;
-
-  const user = {
-    email: firebaseUser.email,
-    password:'password',
-    role: "user",
+  const onSubmit = async (data: any) => {
+    console.log(data)
+    const res = await dispatch(registerUser(data));
+    if (res.meta.requestStatus === "fulfilled") {
+      enqueueSnackbar("Registered Successfully!", { variant: "success" });
+      router.push("/auth/login");
+    } else {
+      enqueueSnackbar(res.payload || "Registration Failed", { variant: "error" });
+    }
   };
 
-  const res = await dispatch(googleLogin(user));
-
-  if (res.meta.requestStatus === "fulfilled") {
-    enqueueSnackbar("Google Login Success!", { variant: "success" });
-    router.push("/dashboard");
-  } else {
-    enqueueSnackbar(res.payload || "Google Login Failed", { variant: "error" });
-  }
-};
-
+  const googleSign = async () => {
+    const firebaseUser = (await signInWithPopup(auth, googleProvider)).user;
+    const user = { email: firebaseUser.email, password: 'password', role: "user" };
+    const res = await dispatch(googleLogin(user));
+    if (res.meta.requestStatus === "fulfilled") {
+      enqueueSnackbar("Google Login Success!", { variant: "success" });
+      router.push("/dashboard");
+    } else {
+      enqueueSnackbar(res.payload || "Google Login Failed", { variant: "error" });
+    }
+  };
 
   return (
-    <>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-        }}
-      >
-      <img src='https://mir-s3-cdn-cf.behance.net/projects/404/6b48ca65212669.Y3JvcCwxMDg4LDg1MSwyNjMsMA.jpg' width={850}  />
+    <div className="register-outer">
+      <div className="register-container">
 
-        <Paper
-          elevation={3}
-          sx={{
-            p: 4,
-            width: "30%",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            flexDirection: "column",
-            boxShadow: "2",
-          }}
-        >
-          <Typography
-            variant="h1"
-            component="h2"
-            fontSize="55px"
-            sx={{ fontStyle: "italic", m: 4 }}
-          >
-            FlipCart
+        {/* LEFT SIDE */}
+        <div className="register-left">
+          <Typography variant="h4" className="register-title">Looks like you're new here!</Typography>
+          <Typography className="register-subtitle">
+            Sign up with your email to get started
           </Typography>
-          
+          <div className="register-image-wrapper">
+            <img
+              // src="https://mir-s3-cdn-cf.behance.net/projects/404/6b48ca65212669.Y3JvcCwxMDg4LDg1MSwyNjMsMA.jpg"
+              className="register-image"
+            />
+          </div>
+        </div>
 
-          <form onSubmit={handleSubmit(onSubmit)}>
+        {/* RIGHT SIDE */}
+        <div className="register-right">
+          <form onSubmit={handleSubmit(onSubmit)} className="register-form">
+
             <Controller
-              name="userName"
+              name="username"
               control={control}
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="User Name"
-                  variant="filled"
+                  placeholder="Enter Username"
+                  variant="standard"
                   fullWidth
-                  error={!!errors.userName}
-                  helperText={errors.userName?.message}
-                  sx={{ mb: 2 }}
+                  error={!!errors.username}
+                  helperText={errors.username?.message}
+                  className="register-input"
                 />
               )}
             />
@@ -148,12 +104,12 @@ const googleSign = async () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Email"
-                  variant="filled"
+                  placeholder="Enter Email"
+                  variant="standard"
                   fullWidth
                   error={!!errors.email}
                   helperText={errors.email?.message}
-                  sx={{ mb: 2 }}
+                  className="register-input"
                 />
               )}
             />
@@ -164,105 +120,70 @@ const googleSign = async () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  label="Password"
+                  placeholder="Enter Password"
                   type={showPassword ? "text" : "password"}
-                  variant="filled"
+                  variant="standard"
                   fullWidth
                   error={!!errors.password}
                   helperText={errors.password?.message}
-                  sx={{ mb: 2}}
+                  className="register-input"
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton
-                          onClick={() => setShowPassword((prev) => !prev)}
-                          edge="end"
-                        >
+                        <IconButton onClick={() => setShowPassword(p => !p)}>
                           {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
-                    ),
+                    )
                   }}
                 />
               )}
             />
+
             <Controller
               name="role"
               control={control}
               render={({ field }) => (
                 <TextField
-                  {...field} 
+                  {...field}
                   select
-                  label="Role"
-                  variant="filled"
+                  placeholder="Select Role"
+                  variant="standard"
                   fullWidth
                   error={!!errors.role}
                   helperText={errors.role?.message}
-                  sx={{ mb: 2 }} 
+                  className="register-input"
                 >
-                <MenuItem value="admin">admin</MenuItem>
-                <MenuItem value="seller">Seller</MenuItem>
-                <MenuItem value="customer">Customer</MenuItem>
+                  <MenuItem value="admin">Admin</MenuItem>
+                  <MenuItem value="seller">Seller</MenuItem>
+                  <MenuItem value="customer">Customer</MenuItem>
                 </TextField>
               )}
             />
 
-            <Button type="submit" variant="contained" fullWidth sx={{ mt: 2 ,height:'4vh',backgroundColor:'orangered'}}>
+            <Button type="submit" fullWidth className="register-btn">
               Sign Up
             </Button>
-             <Typography
-            variant="h4"
-            component="h2"
-            fontSize="25px"
-            sx={{ fontStyle: "italic", m: 2 ,display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'}}
-          >
-            or
-          </Typography>
+
+            <Typography className="register-or">OR</Typography>
 
             <Button
-              onClick={async () => {
-                const firebaseResponse = await signInWithPopup(auth, googleProvider);
-                const firebaseUser = firebaseResponse.user;
-
-                const user = {
-                  email: firebaseUser.email,
-                  role: "user",
-                };
-
-                const res = await dispatch(googleLogin(user));
-
-                if (res.meta.requestStatus === "fulfilled") {
-                  enqueueSnackbar("Signed in with Google!", { variant: "success" });
-                  router.push("/dashboard");
-                } else {
-                  enqueueSnackbar("Google Login Failed", { variant: "error" });
-                }
-              }}
-              variant="contained"
+              onClick={googleSign}
               fullWidth
-              sx={{ mt: 2, height:'4vh',backgroundColor:'orangered'}}
+              className="google-btn"
             >
               Sign in with Google
             </Button>
-          </form>
 
-          <Typography
-            variant="h4"
-            component="h2"
-            fontSize="20px"
-            sx={{ fontStyle: "italic", m: 4 }}
-          >
-            Already have an account?  <Link
-              href="/auth/login"
-            >
-              Login
-            </Link>
-          </Typography>
-        </Paper>
-      </Box>
-    </>
+            <Typography className="register-login-text">
+              Already have an account? <Link href="/auth/login">Login</Link>
+            </Typography>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
   );
 }
 

@@ -24,6 +24,5 @@ export class CreateProductDto {
 
 
   @IsOptional()
-  @IsString()
-  photoUrl?: any[];
+  photoUrl?: string[];
 }

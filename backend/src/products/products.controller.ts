@@ -18,7 +18,7 @@ export class ProductsController {
   )
   create(@UploadedFiles() files: Express.Multer.File[],  @Body() createProductDto: CreateProductDto) {
     console.log("ygygugghg",createProductDto)
-    // return this.productsService.create(createProductDto,files);
+    return this.productsService.create(createProductDto,files);
   }
 
   @Get()

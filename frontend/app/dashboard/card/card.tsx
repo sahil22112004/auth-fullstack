@@ -1,24 +1,32 @@
-import { useState } from "react";
-import "./card.css"
+import { useDispatch } from "react-redux";
+import { addToCart } from "../../redux/slices/authSlice";
+import "./card.css";
 
-function Card({product}:{product:any}) {
-    const [cartItem,setCartItem]=useState([])
+function Card({ product }: { product: any }) {
+  const dispatch = useDispatch();
 
+  const imageUrl = Array.isArray(product.photoUrl)
+    ? product.photoUrl[0]
+    : product.photoUrl;
 
   return (
     <div className="card">
-      <img src={product.photoUrl} alt={product.title} style={{ width: '100%' }} />
+      <img src={imageUrl} alt={product.productName} style={{ width: "100%" }} />
+
       <div className="container">
         <h4><b>{product.productName}</b></h4>
         <p>{product.description}</p>
         <h2>${product.price}</h2>
       </div>
-       <div className="button-group">
-      <button className="addCartButton">Add to cart</button>
-      <button className="viewButton">View</button>
+
+      <div className="button-group">
+        <button className="addCartButton" onClick={() => dispatch(addToCart(product))}>
+          Add to cart
+        </button>
+        <button className="viewButton">View</button>
       </div>
     </div>
   );
 }
 
-export default Card
+export default Card;

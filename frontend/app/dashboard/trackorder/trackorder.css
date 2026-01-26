@@ -1,0 +1,70 @@
+.track-wrapper {
+  width: 90%;
+  margin: 20px auto;
+  font-family: Arial;
+}
+
+.track-title {
+  margin-bottom: 20px;
+}
+
+.order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.order-card {
+  border: 1px solid #ddd;
+  padding: 12px;
+  border-radius: 6px;
+  background: white;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  color: white;
+  font-size: 12px;
+}
+
+.status.processing {
+  background: orange;
+}
+
+.status.shipped {
+  background: #2874f0;
+}
+
+.status.delivered {
+  background: green;
+}
+
+.status.cancelled {
+  background: red;
+}
+
+.order-body {
+  margin-bottom: 8px;
+}
+
+.order-address h4 {
+  margin: 4px 0;
+}
+
+.no-orders {
+  margin-top: 50px;
+  text-align: center;
+}
+
+.loading {
+  margin-top: 50px;
+  text-align: center;
+  font-size: 18px;
+}

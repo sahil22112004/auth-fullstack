@@ -5,9 +5,9 @@ import ProtectedRoute from "../components/protectedRoute"
 export default function dashboardpage(){
     return (
         <>
-        <ProtectedRoute>
+        {/* <ProtectedRoute> */}
         <Dashboard/>
-        </ProtectedRoute>
+        {/* </ProtectedRoute> */}
     
         </>
     )

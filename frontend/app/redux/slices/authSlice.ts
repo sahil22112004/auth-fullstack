@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { apiLogin, apiRegister, apiGoogleLogin } from '@/app/service/authApi';
+import { current } from "@reduxjs/toolkit";
 
 export interface User {
   id?: number | string;
@@ -10,6 +11,7 @@ export interface User {
 
 interface AuthState {
   currentUser: User | null;
+  cart:any;
   loading: boolean;
   error: string | null;
   isLoggedIn: boolean;
@@ -17,13 +19,14 @@ interface AuthState {
 
 const initialState: AuthState = {
   currentUser: null,
+  cart:[],
   loading: false,
   error: null,
   isLoggedIn: false,
 };
 
 export const loginUser = createAsyncThunk(
-  'auth/loginUser',
+  'loginUser',
   async (user: any, { rejectWithValue }) => {
     try {
       return await apiLogin(user);
@@ -34,9 +37,10 @@ export const loginUser = createAsyncThunk(
 );
 
 export const registerUser = createAsyncThunk(
-  'auth/registerUser',
+  'registerUser',
   async (user: any, { rejectWithValue }) => {
     try {
+      console.log("working")
       return await apiRegister(user);
     } catch (err: any) {
       return rejectWithValue(err.message);
@@ -45,7 +49,7 @@ export const registerUser = createAsyncThunk(
 );
 
 export const googleLogin = createAsyncThunk(
-  'auth/googleLogin',
+  'googleLogin',
   async (user: any, { rejectWithValue }) => {
     try {
       return await apiGoogleLogin(user);
@@ -62,7 +66,46 @@ const authSlice = createSlice({
     logout: (state) => {
       state.currentUser = null;
       state.isLoggedIn = false;
+    },
+    addToCart: (state, action) => {
+      console.log('working')
+      console.log("payload ",action.payload)
+      console.log("state:", current(state))
+      console.log("CART BEFORE:", state.cart)
+      const product = action.payload;
+      const existingItem = state.cart?.find((item: any) => item.id === product.id);
+
+      if (existingItem) {
+        existingItem.quantity += 1;
+      } else {
+        state.cart?.push({...product, quantity: 1});
+      }
+      console.log("CART AFTER:", state.cart);
+    },
+
+    incrementQuantity: (state, action) => {
+      const item = state.cart?.find((item: any) => item.id === action.payload);
+      if (item) {
+        item.quantity += 1;
+      }
+    },
+
+    decrementQuantity: (state, action) => {
+      const item = state.cart?.find((item: any) => item.id === action.payload);
+      if (item) {
+        if (item.quantity > 1) {
+          item.quantity -= 1;
+        } else {
+          // remove item when quantity reaches 0
+          state.cart = state.cart?.filter((x: any) => x.id !== action.payload);
+        }
+      }
+    },
+
+    clearCart :(state)=>{
+      state.cart=[]
     }
+
   },
   extraReducers: (builder) => {
     builder
@@ -112,5 +155,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, addToCart, incrementQuantity, decrementQuantity,clearCart } = authSlice.actions;
 export default authSlice.reducer;

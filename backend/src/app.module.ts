@@ -8,8 +8,10 @@ import { ProductsModule } from './products/products.module';
 import { Product } from './products/entities/product.entity';
 import { CategoryModule } from './category/category.module';
 import { Category } from './category/entities/category.entity';
-
-
+import { OrdersModule } from './orders/orders.module';
+import { AddressModule } from './address/address.module';
+import { Address } from './address/entities/address.entity';
+import { Order } from './orders/entities/order.entity';
 
 @Module({
   imports: [
@@ -18,14 +20,16 @@ import { Category } from './category/entities/category.entity';
     host: 'localhost',
     port: 5432,
     username: 'postgres',
-    password: 'admin',
+    password: '1104',
     database: 'auth',
-    entities: [User,Product,Category],
+    entities: [User,Product,Category,Address,Order],
     synchronize: false
   }),
     AuthModule,
     ProductsModule,
-    CategoryModule],
+    CategoryModule,
+    OrdersModule,
+    AddressModule],
   controllers: [AppController],
   providers: [AppService],
 })

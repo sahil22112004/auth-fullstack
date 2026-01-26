@@ -24,10 +24,7 @@ export async function fetchProductById(id: string) {
 export async function addProduct(product: any) {
   const res = await fetch(`http://localhost:3000/products`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(product)
+    body: product
   });
 
   return res;

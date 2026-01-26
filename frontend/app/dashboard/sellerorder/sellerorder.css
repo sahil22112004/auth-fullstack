@@ -1,0 +1,48 @@
+.seller-orders-wrapper {
+  width: 90%;
+  margin: 20px auto;
+  font-family: sans-serif;
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.order-card {
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 6px;
+  background: white;
+}
+
+.order-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.ship-btn {
+  padding: 6px 12px;
+  background: #2874f0;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.deliver-btn {
+  padding: 6px 12px;
+  background: green;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.cancel-btn {
+  padding: 6px 12px;
+  background: red;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
