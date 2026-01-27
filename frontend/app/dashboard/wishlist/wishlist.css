@@ -1,0 +1,156 @@
+.cart-wrapper {
+  width: 90%;
+  margin: 20px auto;
+  font-family: Arial, sans-serif;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.cart-header button {
+  padding: 8px 14px;
+  border: none;
+  border-radius: 4px;
+  background: #2874f0;
+  color: white;
+  cursor: pointer;
+}
+
+.address-section {
+  background: #f7f7f7;
+  padding: 15px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+}
+
+.address-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.address-header button {
+  padding: 6px 10px;
+  background: #fb641b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.address-list {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.address-item {
+  display: flex;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.cart-container {
+  background: white;
+  padding: 15px;
+  border-radius: 6px;
+}
+
+.cart-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cart-item {
+  display: flex;
+  gap: 12px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.cart-img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+}
+
+.qty-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.qty-controls button {
+  padding: 4px 8px;
+  border: none;
+  color: white;
+  background: #2874f0;
+  border-radius: 4px;
+}
+
+.cart-summary {
+  margin-top: 15px;
+  text-align: right;
+}
+
+.checkout-btn {
+  padding: 8px 14px;
+  background: #fb641b;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cart-empty {
+  text-align: center;
+  margin-top: 60px;
+}
+
+.cart-empty button {
+  padding: 10px 20px;
+  background: #2874f0;
+  color: white;
+  border: none;
+  border-radius: 4px;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-box {
+  background: white;
+  padding: 20px;
+  width: 350px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-box input {
+  padding: 8px;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
+
+.cancel-btn {
+  background: gray !important;
+}
+
+.error {
+  color: red;
+  font-size: 12px;
+}

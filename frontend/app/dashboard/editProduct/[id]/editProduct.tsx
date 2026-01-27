@@ -4,24 +4,26 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { enqueueSnackbar } from "notistack";
-import "./addform.css";
+import "./editProduct.css";
 import { useRouter } from "next/navigation";
-import { addProduct, fetchCategories } from "../../service/productApi";
-import { RootState } from "../../redux/store";
+import { addProduct, fetchCategories, fetchProductById, updateProduct } from "../../../service/productApi";
+import { RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
 
-export default function AddProduct() {
+export default function EditProduct({id}:any) {
+
+  const productdetail:any = fetchProductById(id)
   const productSchema = z.object({
     productName: z.string().min(3, "Name must be at least 3 chars"),
     price: z.number().min(1, "Price must be greater than 0"),
     stock: z.number().min(1, "Price must be greater than 0"),
     description: z.string().min(5, "Description required"),
-    photoUrl: z
-      .any()
-      .refine((files) => files instanceof FileList && files.length > 0, {
-        message: "Photo required",
-      })
-      .optional(),
+    // photoUrl: z
+    //   .any()
+    //   .refine((files) => files instanceof FileList && files.length > 0, {
+    //     message: "Photo required",
+    //   })
+    //   .optional(),
     categoryId: z.string().min(1, "Select a category"),
   });
 
@@ -39,7 +41,14 @@ export default function AddProduct() {
     reset,
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
-    defaultValues: {},
+    defaultValues: {
+      productName:productdetail?.productName,
+      price:productdetail.price,
+      stock:productdetail.stock,
+      description:productdetail.description,
+      categoryId:productdetail.categoryId,
+      // photoUrl:[]
+    },
   });
 
   useEffect(() => {
@@ -52,36 +61,31 @@ export default function AddProduct() {
     const userId :any = currentUser?.id || "1";
 
     formData.append("userId", userId);
-    console.log(formData)
     formData.append("productName", product.productName);
-    console.log(formData)
     formData.append("price", String(product.price));
-    console.log(formData)
     formData.append("description", product.description);
     formData.append("stock", String(product.stock));
-    console.log(formData)
     formData.append("categoryId", product.categoryId);
-    console.log(formData)
 
-    const files = product.photoUrl as unknown as FileList;
-    if (files && files.length > 0) {
-      Array.from(files).forEach((file) => {
-        formData.append("photoUrl", file);
-      });
-    }
+    // const files = product.photoUrl as unknown as FileList;
+    // if (files && files.length > 0) {
+    //   Array.from(files).forEach((file) => {
+    //     formData.append("photoUrl", file);
+    //   });
+    // }
     console.log(formData)
 
     try {
-      const response = await addProduct(formData);
-      if (response.ok) {
-        enqueueSnackbar("Product Added Successfully!", { variant: "success" });
+      const response = await updateProduct(id,formData);
+      if (response.status=='fullfield') {
+        enqueueSnackbar("Product updated Successfully!", { variant: "success" });
         router.push("/dashboard");
         reset();
       } else {
-        enqueueSnackbar("Failed to add product", { variant: "error" });
+        enqueueSnackbar("Failed to update product", { variant: "error" });
       }
     } catch (err: any) {
-      enqueueSnackbar(err.message || "Failed to add product", {
+      enqueueSnackbar(err.message || "Failed to update product product", {
         variant: "error",
       });
     }
@@ -113,11 +117,11 @@ export default function AddProduct() {
           {...register("stock", { valueAsNumber: true })}
         />
         {errors.stock && <p className="error">{errors.stock.message}</p>}
-
+{/* 
         <input type="file" accept="image/*" multiple {...register("photoUrl")} />
         {errors.photoUrl && (
           <p className="error">{errors.photoUrl.message as string}</p>
-        )}
+        )} */}
 
         <textarea placeholder="Description" {...register("description")} />
         {errors.description && (
@@ -136,7 +140,7 @@ export default function AddProduct() {
           <p className="error">{errors.categoryId.message}</p>
         )}
 
-        <button type="submit">Add Product</button>
+        <button type="submit">Update</button>
       </form>
     </div>
   );

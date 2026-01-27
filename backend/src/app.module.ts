@@ -12,6 +12,10 @@ import { OrdersModule } from './orders/orders.module';
 import { AddressModule } from './address/address.module';
 import { Address } from './address/entities/address.entity';
 import { Order } from './orders/entities/order.entity';
+import { WishlistModule } from './wishlist/wishlist.module';
+import { Wishlist } from './wishlist/entities/wishlist.entity';
+import { DiscountsModule } from './discounts/discounts.module';
+import { Discount } from './discounts/entities/discount.entity';
 
 @Module({
   imports: [
@@ -20,16 +24,18 @@ import { Order } from './orders/entities/order.entity';
     host: 'localhost',
     port: 5432,
     username: 'postgres',
-    password: '1104',
+    password: 'admin',
     database: 'auth',
-    entities: [User,Product,Category,Address,Order],
+    entities: [User,Product,Category,Address,Order,Wishlist,Discount],
     synchronize: false
   }),
     AuthModule,
     ProductsModule,
     CategoryModule,
     OrdersModule,
-    AddressModule],
+    AddressModule,
+    WishlistModule,
+    DiscountsModule],
   controllers: [AppController],
   providers: [AppService],
 })

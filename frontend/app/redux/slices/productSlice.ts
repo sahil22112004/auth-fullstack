@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { fetchProducts } from '../../service/productApi'
+import { fetchProducts, fetchProductsforseller } from '../../service/productApi'
 
 export const loadProducts = createAsyncThunk(
   'products',
@@ -7,6 +7,15 @@ export const loadProducts = createAsyncThunk(
     console.log('working',props)
     const products = await fetchProducts(props.offset, 10, props.productName, props.category)
     return products
+  }
+)
+
+export const loadsellerProducts = createAsyncThunk(
+  'sellerproducts',
+  async (props: { id:number|string ,offset: number; productName: string; category: string }) => {
+    console.log('working',props)
+    const sellerproducts = await fetchProductsforseller(props.id , props.offset, 10, props.productName, props.category)
+    return sellerproducts
   }
 )
 
@@ -61,7 +70,23 @@ const productSlice = createSlice({
     builder.addCase(loadProducts.rejected, (state, action) => {
       state.loading = false
       state.error = String(action.error)
+    }
+  )
+  builder.addCase(loadsellerProducts.pending, (state) => {
+      state.loading = true
     })
+    builder.addCase(loadsellerProducts.fulfilled, (state, action) => {
+      state.loading = false
+      const list = action.payload ? action.payload : []
+      state.products = [...state.products, ...list]
+      state.offset += 10
+      if (list.length < 10) state.hasMore = false
+    })
+    builder.addCase(loadsellerProducts.rejected, (state, action) => {
+      state.loading = false
+      state.error = String(action.error)
+    }
+  )
   }
 })
 

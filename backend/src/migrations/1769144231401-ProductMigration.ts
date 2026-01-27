@@ -35,6 +35,11 @@ export class ProductMigration1769144231401 implements MigrationInterface {
                     isNullable: false,
                 },
                 {
+                    name: "stock",
+                    type: "int",
+                    default: 0
+                },
+                {
                     name: "photoUrl",
                     type: "text",
                     isArray: true,

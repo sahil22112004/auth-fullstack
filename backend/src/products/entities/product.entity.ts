@@ -14,6 +14,9 @@ export class Product {
   price: string;
 
   @Column()
+  stock: number;
+
+  @Column()
   rating: number;
 
   @Column()

@@ -4,7 +4,6 @@ body {
   background-color: #f4f7f6;
 }
 
-/* ------- NAVBAR ------- */
 .navbar {
   position: sticky;
   top: 0;
@@ -76,7 +75,6 @@ body {
   color: white;
 }
 
-/* ------- MAIN ------- */
 main {
   display: flex;
   justify-content: center;
@@ -90,11 +88,19 @@ main p {
   color: #666;
 }
 
-/* ------- FOOTER ------- */
 .footer {
   text-align: center;
   padding: 1.5rem;
   background: #333;
   color: white;
   margin-top: 40px;
+}
+
+.wishlistbutton{
+  background-color: white;
+  color: black;
+  height: 4vh;
+  width: 80px;
+  border-radius: 5px;
+  margin: 0px 10px;
 }

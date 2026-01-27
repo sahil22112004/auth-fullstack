@@ -15,6 +15,24 @@ export async function fetchProducts(
   return data.products || []   
 }
 
+export async function fetchProductsforseller(
+  id:number|string,
+  offset: number,
+  limit: number,
+  productName?: string,
+  category?: string
+) {
+  let url = `http://localhost:3000/products/seller?offset=${offset}&limit=${limit}&id=${id}`
+
+  if (productName) url += `&productName=${productName}`
+  if (category) url += `&categoryId=${category}`
+
+  const res = await fetch(url)
+  const data = await res.json()
+  console.log(data)
+  return data.products || []   
+}
+
 
 export async function fetchProductById(id: string) {
   const res = await fetch(`http://localhost:3000/products/${id}`);
@@ -22,6 +40,7 @@ export async function fetchProductById(id: string) {
 }
 
 export async function addProduct(product: any) {
+  console.log("product",...product)
   const res = await fetch(`http://localhost:3000/products`, {
     method: "POST",
     body: product
@@ -30,13 +49,13 @@ export async function addProduct(product: any) {
   return res;
 }
 
-export async function updateProduct(id: string, product: any) {
+export async function updateProduct(id: string, product: FormData) {
+  console.log("apiid",id)
+  console.log("product",product)
+
   const res = await fetch(`http://localhost:3000/products/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(product)
+    body: product,
   });
   return await res.json();
 }

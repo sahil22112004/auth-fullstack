@@ -50,7 +50,7 @@ function Register() {
 
   const googleSign = async () => {
     const firebaseUser = (await signInWithPopup(auth, googleProvider)).user;
-    const user = { email: firebaseUser.email, password: 'password', role: "user" };
+    const user = { username:firebaseUser.displayName, email: firebaseUser.email, password: 'password', role: "customer" };
     const res = await dispatch(googleLogin(user));
     if (res.meta.requestStatus === "fulfilled") {
       enqueueSnackbar("Google Login Success!", { variant: "success" });
@@ -70,12 +70,7 @@ function Register() {
           <Typography className="register-subtitle">
             Sign up with your email to get started
           </Typography>
-          <div className="register-image-wrapper">
-            <img
-              // src="https://mir-s3-cdn-cf.behance.net/projects/404/6b48ca65212669.Y3JvcCwxMDg4LDg1MSwyNjMsMA.jpg"
-              className="register-image"
-            />
-          </div>
+
         </div>
 
         {/* RIGHT SIDE */}

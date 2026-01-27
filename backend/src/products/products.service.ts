@@ -1,10 +1,11 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Product } from './entities/product.entity';
 import { productQuery } from './interface/productqueryInterface';
+import { sellerproductQuery } from './interface/sellerproductqueruInterface';
 
 @Injectable()
 export class ProductsService {
@@ -14,7 +15,7 @@ export class ProductsService {
   ) {}
 
   async create(createProductDto: CreateProductDto ,files: Express.Multer.File[]) {
-    const { productName, price, description, userId, categoryId } = createProductDto;
+    const { productName, price, description, userId, categoryId,stock } = createProductDto;
     const photoUrl =
       files?.map((file) => `http://localhost:3000/uploads/${file.filename}`) ||
       [];
@@ -24,6 +25,7 @@ export class ProductsService {
       price,
       photoUrl,
       description,
+      stock:+stock,
       userId: +userId,        
       categoryId: +categoryId, 
       rating: 0,
@@ -54,43 +56,103 @@ export class ProductsService {
 
     return { total, products };
   }
+  async findforseller(query: sellerproductQuery) {
+    const { id, productName, categoryId, limit = 10, offset = 0 } = query;
+
+    const productdata = this.productRepo.createQueryBuilder('product');
+
+    productdata.andWhere('product.userId = :id',{id})
+
+    if (productName) {
+      productdata.andWhere('LOWER(product.productName) LIKE LOWER(:productName)', {
+        productName: `%${productName}%`,
+      });
+    }
+
+    if (categoryId) {
+      productdata.andWhere('product.categoryId = :categoryId', { categoryId });
+    }
+
+    productdata.skip(offset).take(limit);
+
+    const [products, total] = await productdata.getManyAndCount();
+
+    return { total, products };
+  }
 
   async findOne(id: number) {
     const product = await this.productRepo.findOne({ where: { id } });
 
     if (!product) {
-      throw new NotFoundException('product not found');
+      throw new HttpException('product not found',404);
     }
 
     return product;
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto) {
-    const product = await this.productRepo.findOne({ where: { id } });
+  async update(id: number, UpdateProductDto: UpdateProductDto ,files: Express.Multer.File[]) {
+    console.log('working')
+
+    const product = await this.productRepo.findOne({
+      where: { id },
+    });
+
     if (!product) {
-      throw new NotFoundException('product not found');
+      throw new HttpException("Product not found", 404);
     }
+    let photoUrl = product.photoUrl;
 
-    if (updateProductDto.userId) {
-      (updateProductDto as any).userId = +updateProductDto.userId;
+    if (files?.length) {
+      photoUrl = files.map(
+        (file) => `http://localhost:3000/uploads/${file.filename}`,
+      );
     }
-    if (updateProductDto.categoryId) {
-      (updateProductDto as any).categoryId = +updateProductDto.categoryId;
-    }
+    console.log("product",product)
+    console.log("UpdateProductDto",UpdateProductDto)
 
-    Object.assign(product, updateProductDto);
-    const updatedProduct = await this.productRepo.save(product);
+    const updatedProduct :any= {
+      ...product,
+      ...UpdateProductDto,
+      photoUrl,
+    };
 
-    return { message: 'update successfully', product: updatedProduct };
+    console.log(updatedProduct)
+
+    await this.productRepo.save(updatedProduct);
+    return {status:'fullfield',message:'successfuly update product', updatedProduct};
+
+    //     const { productName, price, description, userId, categoryId,stock } = createProductDto;
+
+    // let photoUrl:any[] = await this.productRepo.findOne({where:{id},select:['photoUrl']})
+    // if(files?.length){
+    //   photoUrl =files?.map((file) => `http://localhost:3000/uploads/${file.filename}`) ||[];
+    // }
+    
+    // const product ={
+    //   productName,
+    //   price,
+    //   photoUrl,
+    //   description,
+    //   stock:+stock,
+    //   userId: +userId,        
+    //   categoryId: +categoryId, 
+    //   rating: 0,
+    // }
+
+    // const savedProduct = await this.productRepo.save(product);
+    // return { message: 'successfuly added product', product: savedProduct };
+
   }
 
   async remove(id: number) {
-    const product = await this.productRepo.findOne({ where: { id } });
+    console.log(id)
+    const product = await this.productRepo.find({ where: { id } });
+    console.log(product)
     if (!product) {
-      throw new NotFoundException('product not found');
+      throw new HttpException('product not found',404);
     }
 
-    await this.productRepo.delete(id);
+    await this.productRepo.delete({id});
     return { message: 'product delete successfully', product };
   }
 }

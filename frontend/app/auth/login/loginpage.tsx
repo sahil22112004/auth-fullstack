@@ -60,7 +60,7 @@ function Login() {
 
   const signInWithGoogle = async () => {
     const firebaseUser = (await signInWithPopup(auth, googleProvider)).user;
-    const user = { email: firebaseUser.email, role: "user" };
+    const user = { username:firebaseUser.displayName, email: firebaseUser.email, role: "customer" };
     const res = await dispatch(googleLogin(user));
     if (res.meta.requestStatus === "fulfilled") {
       enqueueSnackbar("Signed in with Google!", { variant: "success" });
@@ -81,12 +81,6 @@ function Login() {
             Get access to your Orders, Wishlist and Recommendations
           </Typography>
 
-          <div className="login-image-wrapper">
-            <img
-              // src="https://mir-s3-cdn-cf.behance.net/projects/404/6b48ca65212669.Y3JvcCwxMDg4LDg1MSwyNjMsMA.jpg"
-              className="login-image"
-            />
-          </div>
         </div>
 
         {/* RIGHT SIDE */}

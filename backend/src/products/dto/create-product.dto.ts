@@ -10,6 +10,10 @@ export class CreateProductDto {
   @IsNotEmpty()
   price: string;
 
+  @IsString()
+  @IsNotEmpty()
+  stock: string;
+
   @IsNumberString()
   @IsNotEmpty()
   userId: string;

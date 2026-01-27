@@ -5,11 +5,7 @@ import "./dashboard.css"
 import Card from "./card/card"
 import { useSelector, useDispatch } from "react-redux"
 import { RootState, AppDispatch } from "../redux/store"
-import {
-  loadProducts,
-  setSearch,
-  setCategory
-} from "../redux/slices/productSlice"
+import { loadProducts, setSearch, setCategory, loadsellerProducts} from "../redux/slices/productSlice"
 import { enqueueSnackbar } from "notistack"
 import { useRouter } from "next/navigation"
 import { logout } from "../redux/slices/authSlice"
@@ -19,14 +15,19 @@ function Dashboard() {
   const dispatch = useDispatch<AppDispatch>()
 
   const {
-    products, loading, hasMore,
-    offset, productName, category
-  } = useSelector((state: RootState) => state.product)
+    products, loading, hasMore,offset, productName, category} = useSelector((state: RootState) => state.product)
 
   const user = useSelector((state: RootState) => state.auth.currentUser)
 
   useEffect(() => {
-    dispatch(loadProducts({ offset: 0, productName: "", category: "" }))
+    if(user?.role =="seller"){
+      const id:any = user.id
+      dispatch(loadsellerProducts({ id,offset: 0, productName: "", category: "" }))
+
+    }else{
+      dispatch(loadProducts({ offset: 0, productName: "", category: "" }))
+    }
+   
   }, [])
 
   function handleSearch(e: any) {
@@ -38,13 +39,24 @@ function Dashboard() {
   function handleCategorySelect(e: any) {
     const val = e.target.value
     dispatch(setCategory(val))
-    dispatch(loadProducts({ offset: 0, productName, category: val }))
-    if (val) enqueueSnackbar(`Filtered by ${val}`, { variant: "info" })
+    if(user?.role=='seller'){
+      const id:any = user.id
+      dispatch(loadsellerProducts({ id,offset: 0, productName, category: val }))
+    }else{
+      dispatch(loadProducts({ offset: 0, productName, category: val }))
+    }
+    
   }
 
   function loadMore() {
     if (!loading && hasMore) {
-      dispatch(loadProducts({ offset, productName, category }))
+      if(user?.role=='seller'){
+        const id:any = user.id 
+        dispatch(loadsellerProducts({id, offset, productName, category }))
+      }else{
+        dispatch(loadProducts({ offset, productName, category }))
+      }
+      
     }
   }
 
@@ -100,6 +112,7 @@ function Dashboard() {
                 type="text"
                 placeholder="Search products..."
                 value={productName}
+
                 onChange={handleSearch}
                 className="nav-search"
               />
@@ -137,7 +150,9 @@ function Dashboard() {
               </select>
             </div>
 
+
             <div className="nav-right">
+              <button className="wishlistbutton"> WishList</button>
               <button className="nav-btn" onClick={() => router.push("/dashboard/cart")}>
                 Cart
               </button>
