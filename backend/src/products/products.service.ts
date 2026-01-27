@@ -80,6 +80,11 @@ export class ProductsService {
     return { total, products };
   }
 
+  async findAllForAdmin() {
+  return await this.productRepo.find();
+}
+
+
   async findOne(id: number) {
     const product = await this.productRepo.findOne({ where: { id } });
 
@@ -155,4 +160,23 @@ export class ProductsService {
     await this.productRepo.delete({id});
     return { message: 'product delete successfully', product };
   }
+  async updateBanStatus(id: number, isBanned: boolean) {
+  const product = await this.productRepo.findOne({ where: { id } });
+
+  if (!product) {
+    throw new HttpException(
+      { message: 'Product not found', status: 404 },
+      404,
+    );
+  }
+
+  product.isBanned = isBanned;
+  await this.productRepo.save(product);
+
+  return {
+    message: `Product ${isBanned ? 'banned' : 'unbanned'} successfully`,
+    product,
+  };
+}
+
 }

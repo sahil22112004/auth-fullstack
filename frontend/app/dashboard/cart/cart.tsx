@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../redux/store";
 import { incrementQuantity, decrementQuantity, clearCart } from "../../redux/slices/authSlice";
 import { fetchUserAddresses, createAddress, createOrder } from "../../service/checkOutApi";
+import { applyPromoCode } from "../../service/discountapi";
 import { useRouter } from "next/navigation";
 import "./cart.css";
 
@@ -26,6 +27,7 @@ const AddressSchema = z.object({
 type AddressFormType = z.infer<typeof AddressSchema>;
 
 export default function CartPage() {
+
   const router = useRouter();
   const dispatch = useDispatch();
   const { enqueueSnackbar } = useSnackbar();
@@ -37,8 +39,12 @@ export default function CartPage() {
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
 
+  const [promoInput, setPromoInput] = useState("");
+  const [discountPercent, setDiscountPercent] = useState<number>(0);
+  const [discountStatus, setDiscountStatus] = useState<"none" | "success" | "error">("none");
+
   const { register, handleSubmit, formState: { errors }, reset } = useForm<AddressFormType>({
-    resolver: zodResolver(AddressSchema)
+    resolver: zodResolver(AddressSchema),
   });
 
   useEffect(() => {
@@ -59,23 +65,50 @@ export default function CartPage() {
     enqueueSnackbar("Address added successfully!", { variant: "success" });
   };
 
+  const totalAmount = cart.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
+
+  const finalAmount = discountPercent > 0
+    ? totalAmount - (totalAmount * discountPercent) / 100
+    : totalAmount;
+
+  async function handleApplyPromo() {
+    if (!promoInput) return;
+
+    try {
+      const result = await applyPromoCode(promoInput);
+      setDiscountPercent(result.discountPercentage);
+      setDiscountStatus("success");
+      enqueueSnackbar(`Promo applied! ${result.discountPercentage}% OFF`, { variant: "success" });
+    } catch (err) {
+      setDiscountStatus("error");
+      setDiscountPercent(0);
+      enqueueSnackbar("Invalid promo code", { variant: "error" });
+    }
+
+    setPromoInput("");
+  }
+
   async function handleCheckout() {
     if (!selectedAddress) {
       enqueueSnackbar("Please choose an address.", { variant: "error" });
       return;
     }
 
-    const orderList = cart.map((item: any) => ({
-      userId: String(user?.id),
-      sellerId: String(item.userId),
-      addressId: selectedAddress,
-      productId: String(item.id),
-      productName: item.productName,
-      quantity: Number(item.quantity),
-      price: Number(item.price),
-    }));
+    const orderList = cart.map((item: any) => {
+      const discountedPrice = discountPercent > 0
+        ? Number(item.price) - (Number(item.price) * discountPercent) / 100
+        : Number(item.price);
 
-    console.log("SENDING ORDER LIST:", orderList);
+      return {
+        userId: String(user?.id),
+        sellerId: String(item.userId),
+        addressId: selectedAddress,
+        productId: String(item.id),
+        productName: item.productName,
+        quantity: Number(item.quantity),
+        price: Number(discountedPrice.toFixed(2)),
+      };
+    });
 
     await createOrder(orderList);
 
@@ -84,10 +117,9 @@ export default function CartPage() {
     router.push("/dashboard/trackorder");
   }
 
-  const totalAmount = cart.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0);
-
   return (
     <div className="cart-wrapper">
+
       <div className="cart-header">
         <button onClick={() => router.push("/dashboard")}>Home</button>
         <h2>Shopping Cart</h2>
@@ -96,6 +128,7 @@ export default function CartPage() {
 
       {cart.length !== 0 ? (
         <div>
+          
           <div className="address-section">
             <div className="address-header">
               <h3>Select Delivery Address</h3>
@@ -122,6 +155,19 @@ export default function CartPage() {
             </div>
           </div>
 
+          <div className="promo-section">
+            <input
+              type="text"
+              placeholder="Enter promo code"
+              value={promoInput}
+              onChange={(e) => setPromoInput(e.target.value)}
+            />
+            <button onClick={handleApplyPromo}>Apply</button>
+          </div>
+
+          {discountStatus === "success" && <p className="promo-success">Discount applied!</p>}
+          {discountStatus === "error" && <p className="promo-error">Invalid promo code</p>}
+
           <div className="cart-container">
             <div className="cart-items">
               {cart.map((item: any) => {
@@ -135,11 +181,31 @@ export default function CartPage() {
                       <h3>{item.productName}</h3>
                       <p>{item.description}</p>
                       <p className="cart-price">₹{item.price}</p>
+                      <p style={{ fontSize: "13px", color: "gray" }}>Stock: {item.stock}</p>
 
                       <div className="qty-controls">
-                        <button onClick={() => dispatch(decrementQuantity(item.id))}>−</button>
+
+                        <button
+                          onClick={() => dispatch(decrementQuantity(item.id))}
+                        >
+                          -
+                        </button>
+
                         <span>{item.quantity}</span>
-                        <button onClick={() => dispatch(incrementQuantity(item.id))}>+</button>
+
+                        <button
+                          onClick={() => {
+                            if (item.quantity < item.stock) {
+                              dispatch(incrementQuantity(item.id));
+                            } else {
+                              enqueueSnackbar(`Only ${item.stock} in stock`, { variant: "warning" });
+                            }
+                          }}
+                          disabled={item.quantity >= item.stock}
+                        >
+                          +
+                        </button>
+
                       </div>
                     </div>
                   </div>
@@ -148,7 +214,10 @@ export default function CartPage() {
             </div>
 
             <div className="cart-summary">
-              <h3>Total: ₹{totalAmount.toFixed(2)}</h3>
+              {discountPercent > 0 && (
+                <p className="discount-info">Applied: {discountPercent}% OFF</p>
+              )}
+              <h3>Total: ₹{finalAmount.toFixed(2)}</h3>
               <button className="checkout-btn" onClick={handleCheckout}>
                 Place Order
               </button>

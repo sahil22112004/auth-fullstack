@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { CreateDiscountDto } from './dto/create-discount.dto';
 import { UpdateDiscountDto } from './dto/update-discount.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -21,15 +21,24 @@ export class DiscountsService {
     return `This action returns all discounts`;
   }
 
-  findOne(discountname: string) {
-    const findDiscount = 
+  async findOne(discountName: string) {
+  const discount = await this.discountRepo.findOne({
+    where: { discountName }
+  });
 
-
-    
-
-
-    // return `This action returns a #${id} discount`;
+  if (!discount) {
+    throw new HttpException(
+      { message: "Invalid discount code", status: 404 },
+      404
+    );
   }
+
+  return {
+    discountName: discount.discountName,
+    discountPercentage: Number(discount.discountPercentage)
+  };
+}
+
 
   update(id: number, updateDiscountDto: UpdateDiscountDto) {
     return `This action updates a #${id} discount`;

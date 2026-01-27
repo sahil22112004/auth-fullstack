@@ -42,6 +42,13 @@ export class AuthService {
         404,
       );
     }
+    if(user.isBlocked){
+      throw new HttpException(
+        { message: 'This Account is Blocked Cantact admin', status: 400 },
+        400,
+      );
+
+    }
 
     return user;
   }
@@ -53,6 +60,13 @@ export class AuthService {
     const user = await this.userRepo.findOne({ where: { email } });
 
     if (user) {
+      if(user.isBlocked){
+        throw new HttpException(
+        { message: 'This Account is Blocked Cantact admin', status: 400 },
+        400,
+      );
+
+      }
       return { message: 'Signing in' , user:user};
     }
 
@@ -62,9 +76,30 @@ export class AuthService {
     return { message: 'Registered successfully',user:newUser };
   }
 
-  findAll() {
-    return `This action returns all auth`;
+  async updateBlockStatus(id: number, isBlocked: boolean) {
+  const user = await this.userRepo.findOne({ where: { id } });
+
+  if (!user) {
+    throw new HttpException(
+      { message: 'User not found', status: 404 },
+      404,
+    );
   }
+
+  user.isBlocked = isBlocked;
+  await this.userRepo.save(user);
+
+  return {
+    message: `User ${isBlocked ? 'blocked' : 'unblocked'} successfully`,
+    user,
+  };
+}
+
+
+  async findAll() {
+  const users = await this.userRepo.find();
+  return users;
+    }
 
   findOne(id: number) {
     return `This action returns a #${id} auth`;

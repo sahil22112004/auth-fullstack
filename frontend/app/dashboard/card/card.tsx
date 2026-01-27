@@ -1,69 +1,119 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../../redux/slices/authSlice";
-import "./card.css";
 import { RootState } from "../../redux/store";
 import { useRouter } from "next/navigation";
-import { deleteProduct } from "@/app/service/productApi";
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import { addToWishlist, fetchonewishlist } from "../../service/wishlist";
+import "./card.css";
 
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import FavoriteIcon from "@mui/icons-material/Favorite";
 
- function Card({ product }: { product: any }) {
+import {
+  addToWishlist,
+  removeFromWishlist,
+  fetchwishlist
+} from "../../service/wishlist";
+
+function Card({ product }: { product: any }) {
   const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.auth.currentUser)
-  const router =  useRouter()
+  const router = useRouter();
+  const user = useSelector((state: RootState) => state.auth.currentUser);
 
-  const wishlistdata =  fetchonewishlist(product.id)
-  console.log("data fro ",wishlistdata)
+  const [inWishlist, setInWishlist] = useState(false);
 
-  const handlewishList = async (ProductId:any,userId:any) =>{
-    const wishlist = {
-      productId:ProductId,
-      userId:userId
+  useEffect(() => {
+    if (user?.id) loadWishlist();
+  }, [user]);
+
+  const loadWishlist = async () => {
+    try {
+      const data = await fetchwishlist(user?.id);
+      const exists = data.some((item: any) => item.productId === product.id);
+      setInWishlist(exists);
+    } catch (err) {
+      console.log("Error checking wishlist");
     }
+  };
 
+  const toggleWishlist = async () => {
+    if (!user) return alert("Please login first!");
 
-    const res = addToWishlist(wishlist)
-  }
-
+    if (inWishlist) {
+      await removeFromWishlist(user.id, product.id);
+      setInWishlist(false);
+    } else {
+      await addToWishlist({ userId: user.id, productId: product.id });
+      setInWishlist(true);
+    }
+  };
 
   const imageUrl = Array.isArray(product.photoUrl)
     ? product.photoUrl[0]
     : product.photoUrl;
 
+  const isOutOfStock = Number(product.stock) <= 0;
+
+  if (user?.role !== "seller" && product.isBanned) {
+    return null;
+  }
+
   return (
     <div className="card">
-      <img src={imageUrl} alt={product.productName} style={{ width: "100%" }} />
+
+      <img src={imageUrl} alt={product.productName} className="card-img" />
 
       <div className="container">
         <h4><b>{product.productName}</b></h4>
         <p>{product.description}</p>
-        <h2>${product.price}</h2>
+        <h2>₹{product.price}</h2>
+        <p style={{ fontSize: "12px", color: "gray" }}>Stock: {product.stock}</p>
       </div>
 
-      {(user?.role=='seller')
-      ?(<div className="button-group">
-         <button className="addCartButton" onClick={() =>router.push(`/dashboard/editProduct/${product.id}`)}>
-          Edit
-        </button>
-        <button className="viewButton" onClick={()=>deleteProduct(product.id)}>Delete</button>
-      </div>):(
+      {user?.role === "seller" ? (
+        product.isBanned ? (
+          <p className="banned-text">Your product is banned. Contact admin.</p>
+        ) : (
+          <div className="button-group">
+            <button
+              className="addCartButton"
+              onClick={() => router.push(`/dashboard/editProduct/${product.id}`)}
+            >
+              Edit
+            </button>
+            <button className="viewButton">Delete</button>
+          </div>
+        )
+      ) : (
         <div className="button-group">
-        <button className="addCartButton" onClick={() => dispatch(addToCart(product))}>
-          Add To Cart
-        </button>
-        <button className="viewButton">View</button>
-        <button onClick={()=>handlewishList(product.id,user?.id)}><FavoriteBorderIcon/></button>
-        
-      </div>
+          {isOutOfStock ? (
+            <button className="outStockButton" disabled>
+              Out of Stock
+            </button>
+          ) : (
+            <button className="addCartButton" onClick={() => dispatch(addToCart(product))}>
+              Add To Cart
+            </button>
+          )}
+
+          <button
+            className="viewButton"
+            onClick={() => router.push(`/dashboard/view/${product.id}`)}
+          >
+            View
+          </button>
+
+          <button className="wishlist-button" onClick={toggleWishlist}>
+            {inWishlist ? (
+              <FavoriteIcon style={{ color: "black" }} />
+            ) : (
+              <FavoriteBorderIcon />
+            )}
+          </button>
+        </div>
       )}
 
-      {/* <div className="button-group">
-        <button className="addCartButton" onClick={() => dispatch(addToCart(product))}>
-          Add to cart
-        </button>
-        <button className="viewButton">View</button>
-      </div> */}
     </div>
   );
 }

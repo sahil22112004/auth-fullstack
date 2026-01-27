@@ -22,6 +22,9 @@ export class Product {
   @Column()
   description: string;
 
+  @Column()
+  isBanned: boolean;
+
   @Column("text", { array: true })
   photoUrl: string[];
 

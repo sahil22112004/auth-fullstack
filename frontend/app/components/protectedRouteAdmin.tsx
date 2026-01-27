@@ -5,13 +5,16 @@ import { RootState } from "@/app/redux/store";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
+export default function ProtectedRouteAdmin({ children }: { children: React.ReactNode }) {
   const { isLoggedIn } = useSelector((state: RootState) => state.auth);
   const user = useSelector((state: RootState) => state.auth.currentUser);
   const router = useRouter();
 
   useEffect(() => {
     if (!isLoggedIn || !user) {
+      router.push("/auth/login");
+    }
+    if (user?.role!=='admin') {
       router.push("/auth/login");
     }
   }, [isLoggedIn]);

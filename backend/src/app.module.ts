@@ -24,7 +24,7 @@ import { Discount } from './discounts/entities/discount.entity';
     host: 'localhost',
     port: 5432,
     username: 'postgres',
-    password: 'admin',
+    password: '1104',
     database: 'auth',
     entities: [User,Product,Category,Address,Order,Wishlist,Discount],
     synchronize: false

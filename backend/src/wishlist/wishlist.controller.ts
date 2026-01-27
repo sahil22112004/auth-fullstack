@@ -31,8 +31,9 @@ export class WishlistController {
     return this.wishlistService.update(+id, updateWishlistDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.wishlistService.remove(+id);
-  }
+  @Delete('/:userId/:productId')
+  removet(@Param('userId') userId: string, @Param('productId') productId: string,) {
+  return this.wishlistService.remove(+userId, +productId);
+}
+
 }

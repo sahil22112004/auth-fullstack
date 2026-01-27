@@ -35,6 +35,12 @@ export class ProductMigration1769144231401 implements MigrationInterface {
                     isNullable: false,
                 },
                 {
+                    name: "isBanned",
+                    type: "boolean",
+                    isNullable: false,
+                    default: false
+                },
+                {
                     name: "stock",
                     type: "int",
                     default: 0

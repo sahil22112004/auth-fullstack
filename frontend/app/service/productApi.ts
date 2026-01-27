@@ -73,3 +73,15 @@ export async function fetchCategories() {
   return await res.json();
 }
 
+export async function getProductById(id: string | number) {
+  const res = await fetch(`http://localhost:3000/products/${id}`);
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(error.message || "Failed to fetch product");
+  }
+
+  return await res.json();
+}
+
+

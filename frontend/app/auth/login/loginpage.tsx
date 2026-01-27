@@ -50,9 +50,12 @@ function Login() {
 
   const onSubmit = async (data: any) => {
     const res = await dispatch(loginUser(data));
+    console.log("dta login form mmm",res.payload)
     if (res.meta.requestStatus === "fulfilled") {
       enqueueSnackbar("Logged In Successfully", { variant: "success" });
-      router.push("/dashboard");
+      if(res.payload.role=='admin'){
+        router.push("/admindashboard");
+      }else{router.push("/dashboard");}
     } else {
       enqueueSnackbar(res.payload || "Login Failed", { variant: "error" });
     }

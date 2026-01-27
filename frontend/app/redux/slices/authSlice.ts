@@ -96,7 +96,6 @@ const authSlice = createSlice({
         if (item.quantity > 1) {
           item.quantity -= 1;
         } else {
-          // remove item when quantity reaches 0
           state.cart = state.cart?.filter((x: any) => x.id !== action.payload);
         }
       }

@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, IsNumber, IsNumberString, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber, IsNumberString, IsOptional, IsBoolean } from 'class-validator';
 
 export class CreateProductDto {
 
@@ -26,6 +26,9 @@ export class CreateProductDto {
   @IsNotEmpty()
   description: string;
 
+  // @IsBoolean()
+  // @IsNotEmpty()
+  // isBanned: boolean;
 
   @IsOptional()
   photoUrl?: string[];

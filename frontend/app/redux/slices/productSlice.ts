@@ -2,20 +2,16 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
 import { fetchProducts, fetchProductsforseller } from '../../service/productApi'
 
 export const loadProducts = createAsyncThunk(
-  'products',
+  'products/load',
   async (props: { offset: number; productName: string; category: string }) => {
-    console.log('working',props)
-    const products = await fetchProducts(props.offset, 10, props.productName, props.category)
-    return products
+    return await fetchProducts(props.offset, 10, props.productName, props.category)
   }
 )
 
 export const loadsellerProducts = createAsyncThunk(
-  'sellerproducts',
-  async (props: { id:number|string ,offset: number; productName: string; category: string }) => {
-    console.log('working',props)
-    const sellerproducts = await fetchProductsforseller(props.id , props.offset, 10, props.productName, props.category)
-    return sellerproducts
+  'products/loadSeller',
+  async (props: { id: number | string; offset: number; productName: string; category: string }) => {
+    return await fetchProductsforseller(props.id, props.offset, 10, props.productName, props.category)
   }
 )
 
@@ -62,31 +58,38 @@ const productSlice = createSlice({
     })
     builder.addCase(loadProducts.fulfilled, (state, action) => {
       state.loading = false
-      const list = action.payload ? action.payload : []
-      state.products = [...state.products, ...list]
+      const list = action.payload || []
+
+      const existingIds = new Set(state.products.map(p => p.id))
+      const newItems = list.filter((item:any) => !existingIds.has(item.id))
+
+      state.products.push(...newItems)
       state.offset += 10
       if (list.length < 10) state.hasMore = false
     })
     builder.addCase(loadProducts.rejected, (state, action) => {
       state.loading = false
       state.error = String(action.error)
-    }
-  )
-  builder.addCase(loadsellerProducts.pending, (state) => {
+    })
+
+    builder.addCase(loadsellerProducts.pending, (state) => {
       state.loading = true
     })
     builder.addCase(loadsellerProducts.fulfilled, (state, action) => {
       state.loading = false
-      const list = action.payload ? action.payload : []
-      state.products = [...state.products, ...list]
+      const list = action.payload || []
+
+      const existingIds = new Set(state.products.map(p => p.id))
+      const newItems = list.filter((item:any) => !existingIds.has(item.id))
+
+      state.products.push(...newItems)
       state.offset += 10
       if (list.length < 10) state.hasMore = false
     })
     builder.addCase(loadsellerProducts.rejected, (state, action) => {
       state.loading = false
       state.error = String(action.error)
-    }
-  )
+    })
   }
 })
 

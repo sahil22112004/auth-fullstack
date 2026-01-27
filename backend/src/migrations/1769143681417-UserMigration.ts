@@ -35,7 +35,13 @@ export class UserMigration1769143681417 implements MigrationInterface {
                         name: "role",
                         type: "varchar",
                         isNullable: false
-                    }
+                    },
+                    {
+                    name: "isBlocked",
+                    type: "boolean",
+                    isNullable: false,
+                    default: false
+                }
                 ]
             }),
             true

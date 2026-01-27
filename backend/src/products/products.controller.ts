@@ -32,6 +32,12 @@ export class ProductsController {
     return this.productsService.findforseller(query);
   }
 
+  @Get('admin/all')
+findAllForAdmin() {
+  return this.productsService.findAllForAdmin();
+}
+
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.productsService.findOne(+id);
@@ -52,4 +58,13 @@ export class ProductsController {
   remove(@Param('id') id: string) {
     return this.productsService.remove(+id);
   }
+
+  @Patch('ban/:id')
+updateBanStatus(
+  @Param('id') id: string,
+  @Body('isBanned') isBanned: boolean,
+) {
+  return this.productsService.updateBanStatus(+id, isBanned);
+}
+
 }

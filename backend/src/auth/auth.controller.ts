@@ -21,6 +21,15 @@ export class AuthController {
     return this.authService.siginwithGoogle(createAuthDto);
   }
 
+  @Patch('block/:id')
+updateBlockStatus(
+  @Param('id') id: string,
+  @Body('isBlocked') isBlocked: boolean,
+) {
+  return this.authService.updateBlockStatus(+id, isBlocked);
+}
+
+
   @Get()
   findAll() {
     return this.authService.findAll();

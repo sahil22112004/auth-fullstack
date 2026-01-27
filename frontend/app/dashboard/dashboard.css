@@ -1,106 +1,145 @@
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   margin: 0;
-  background-color: #f4f7f6;
+  background: #f5f7fa;
 }
 
 .navbar {
   position: sticky;
   top: 0;
-  background: #2874f0;
   display: flex;
   align-items: center;
-  padding: 0 20px;
-  height: 60px;
-  color: white;
+  justify-content: space-between;
+  background: #2874f0;
+  padding: 10px 16px;
+  color: #fff;
   z-index: 1000;
 }
 
-.nav-left {
-  display: flex;
-  align-items: center;
-}
-
 .nav-logo {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 700;
-  margin: 0;
 }
 
 .nav-center {
   flex: 1;
   display: flex;
-  align-items: center;
   gap: 10px;
-  margin-left: 20px;
+  margin: 0 20px;
+}
+
+.nav-search {
+  padding: 8px 10px;
+  border: none;
+  border-radius: 4px;
+  outline: none;
+  background-color: white;
+  color: black;
+  border-radius: 20px;
+}
+
+.nav-select {
+  padding: 8px 10px;
+  border: none;
+  border-radius: 4px;
+  outline: none;
 }
 
 .nav-search {
   flex: 1;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 2px;
-  outline: none;
 }
 
 .nav-select {
-  padding: 8px 12px;
-  border-radius: 2px;
-  border: none;
-  outline: none;
+  width: 160px;
 }
 
+/* Right Buttons */
 .nav-right {
   display: flex;
-  align-items: center;
   gap: 10px;
 }
 
-.nav-btn {
-  background: white;
-  color: #2874f0;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 2px;
+.nav-right button {
+  padding: 7px 12px;
   font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  background: #fff;
+  color: #2874f0;
   cursor: pointer;
+  transition: 0.2s ease;
 }
 
-.nav-btn:hover {
+.nav-right button:hover {
   background: #e6e6e6;
 }
 
-.nav-logout {
-  background: #ff6161;
-  color: white;
+.nav-right .logout-btn {
+  background: #ff4d4d;
+  color: #fff;
+}
+
+.nav-right .logout-btn:hover {
+  background: #e04444;
 }
 
 main {
   display: flex;
-  justify-content: center;
   flex-wrap: wrap;
-  gap: 20px;
-  padding: 40px 20px;
+  justify-content: center;
+  gap: 18px;
+  padding: 20px;
 }
 
 main p {
-  font-size: 1.1rem;
   color: #666;
+  font-size: 1rem;
 }
 
 .footer {
   text-align: center;
-  padding: 1.5rem;
-  background: #333;
-  color: white;
-  margin-top: 40px;
+  padding: 15px 0;
+  background: #141414;
+  color: #eee;
+  margin-top: 20px;
+  font-size: 14px;
 }
 
-.wishlistbutton{
-  background-color: white;
-  color: black;
-  height: 4vh;
-  width: 80px;
-  border-radius: 5px;
-  margin: 0px 10px;
+
+@media (max-width: 900px) {
+  .nav-center {
+    flex-direction: column;
+    margin: 0 10px;
+  }
+
+  .nav-select {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .navbar {
+    flex-wrap: wrap;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .nav-center {
+    width: 100%;
+    order: 3;
+  }
+
+  .nav-right {
+    width: 100%;
+    justify-content: center;
+    order: 2;
+  }
+
+  .nav-right button {
+    flex: 1;
+  }
+
+  main {
+    padding: 15px;
+  }
 }

@@ -6,6 +6,7 @@ import { RootState } from "../../redux/store";
 import { fetchOrdersBySeller, updateOrderToShipped, updateOrderToDelivered, updateOrderToCancelled,} from "../../service/checkOutApi";
 import { useSnackbar } from "notistack";
 import "./sellerorder.css";
+import { colors } from "@mui/material";
 
 export default function SellerOrdersPage() {
   const { enqueueSnackbar } = useSnackbar();
@@ -54,7 +55,7 @@ export default function SellerOrdersPage() {
   async function handleCancel(id: string) {
     try {
       await updateOrderToCancelled(id);
-      enqueueSnackbar("Order cancelled", { variant: "warning" });
+      enqueueSnackbar("Order cancelled", { variant: "success" });
       loadOrders();
     } catch (err: any) {
       enqueueSnackbar(err.message, { variant: "error" });
@@ -104,11 +105,13 @@ export default function SellerOrdersPage() {
                 </button>
               )}
 
-              {order.status !== "delivered" && (
+              {(order.status !== "delivered" && order.status !== "cancelled") && (
                 <button className="cancel-btn" onClick={() => handleCancel(order.id)}>
                   Cancel Order
                 </button>
               )}
+              {order.status === "cancelled" && 
+              <h3 style={{ color: "red" }}>Order Cancelled</h3>}
             </div>
           </div>
         ))}

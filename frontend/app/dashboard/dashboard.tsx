@@ -1,173 +1,115 @@
 "use client";
 
-import { useEffect } from "react"
-import "./dashboard.css"
-import Card from "./card/card"
-import { useSelector, useDispatch } from "react-redux"
-import { RootState, AppDispatch } from "../redux/store"
-import { loadProducts, setSearch, setCategory, loadsellerProducts} from "../redux/slices/productSlice"
-import { enqueueSnackbar } from "notistack"
-import { useRouter } from "next/navigation"
-import { logout } from "../redux/slices/authSlice"
+import { useEffect } from "react";
+import "./dashboard.css";
+import Card from "./card/card";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../redux/store";
+import { loadProducts, loadsellerProducts, setSearch, setCategory } from "../redux/slices/productSlice";
+import { useRouter } from "next/navigation";
+import { logout } from "../redux/slices/authSlice";
 
 function Dashboard() {
-  const router = useRouter()
-  const dispatch = useDispatch<AppDispatch>()
+  const dispatch = useDispatch<AppDispatch>();
+  const router = useRouter();
 
-  const {
-    products, loading, hasMore,offset, productName, category} = useSelector((state: RootState) => state.product)
+  const { products, loading, hasMore, offset, productName, category } =
+    useSelector((state: RootState) => state.product);
 
-  const user = useSelector((state: RootState) => state.auth.currentUser)
+  const user = useSelector((state: RootState) => state.auth.currentUser);
 
   useEffect(() => {
-    if(user?.role =="seller"){
-      const id:any = user.id
-      dispatch(loadsellerProducts({ id,offset: 0, productName: "", category: "" }))
-
-    }else{
+    if (user?.role === "seller") {
+      dispatch(loadsellerProducts({ id: user?.id ?? '', offset: 0, productName: "", category: "" }))
+    } else {
       dispatch(loadProducts({ offset: 0, productName: "", category: "" }))
     }
-   
-  }, [])
+  }, [user]);
 
-  function handleSearch(e: any) {
-    const val = e.target.value
-    dispatch(setSearch(val))
-    dispatch(loadProducts({ offset: 0, productName: val, category }))
-  }
-
-  function handleCategorySelect(e: any) {
-    const val = e.target.value
-    dispatch(setCategory(val))
-    if(user?.role=='seller'){
-      const id:any = user.id
-      dispatch(loadsellerProducts({ id,offset: 0, productName, category: val }))
-    }else{
-      dispatch(loadProducts({ offset: 0, productName, category: val }))
+  const handleSearch = (e: any) => {
+    dispatch(setSearch(e.target.value));
+    if (user?.role === "seller") {
+      dispatch(loadsellerProducts({ id: user?.id ?? '', offset: 0, productName: e.target.value, category }));
+    } else {
+      dispatch(loadProducts({ offset: 0, productName: e.target.value, category }));
     }
-    
-  }
+  };
 
-  function loadMore() {
+  const handleCategory = (e: any) => {
+    dispatch(setCategory(e.target.value));
+    if (user?.role === "seller") {
+      dispatch(loadsellerProducts({ id: user?.id ?? '', offset: 0, productName, category: e.target.value }));
+    } else {
+      dispatch(loadProducts({ offset: 0, productName, category: e.target.value }));
+    }
+  };
+
+  const loadMore = () => {
     if (!loading && hasMore) {
-      if(user?.role=='seller'){
-        const id:any = user.id 
-        dispatch(loadsellerProducts({id, offset, productName, category }))
-      }else{
-        dispatch(loadProducts({ offset, productName, category }))
+      if (user?.role === "seller") {
+        dispatch(loadsellerProducts({ id: user?.id ?? '', offset, productName, category }));
+      } else {
+        dispatch(loadProducts({ offset, productName, category }));
       }
-      
     }
-  }
+  };
 
-  function onScroll() {
-    if (window.innerHeight + window.scrollY + 2 >= document.body.scrollHeight) {
-      loadMore()
+  const onScroll = () => {
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2) {
+      loadMore();
     }
-  }
+  };
 
   useEffect(() => {
-    window.addEventListener("scroll", onScroll)
-    return () => window.removeEventListener("scroll", onScroll)
-  }, [offset, productName, category, loading, hasMore])
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [offset, productName, category, loading, hasMore]);
 
-  function handlelogout() {
-    dispatch(logout())
-    router.push('/auth/login')
-  }
+  const handleLogout = () => {
+    dispatch(logout());
+    router.push("/auth/login");
+  };
 
   return (
     <>
       <header className="navbar">
-        <div className="nav-left">
-          <h2 className="nav-logo">FlipKart</h2>
+        <h2 className="nav-logo">FlipKart</h2>
+
+        <div className="nav-center">
+          <input
+            type="text"
+            placeholder="Search products..."
+            value={productName}
+            onChange={handleSearch}
+            className="nav-search"
+          />
+          <select value={category} onChange={handleCategory} className="nav-select">
+            <option value="">All Categories</option>
+            {/* Add dynamic categories if needed */}
+          </select>
         </div>
 
-        {user?.role === "seller" ? (
-          
-          <div className="nav-right">
-            <input
-                type="text"
-                placeholder="Search products..."
-                value={productName}
-                onChange={handleSearch}
-                className="nav-search"
-              />
-            <button className="nav-btn" onClick={() => router.push("/components/addform")}>
-              Add Product
-            </button>
-
-            <button className="nav-btn" onClick={() => router.push("/dashboard/sellerorder")}>
-              Orders
-            </button>
-
-            <button className="nav-btn nav-logout" onClick={handlelogout}>
-              Logout
-            </button>
-          </div>
-        ) : (
-          <>
-            <div className="nav-center">
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={productName}
-
-                onChange={handleSearch}
-                className="nav-search"
-              />
-
-              <select
-                value={category}
-                onChange={handleCategorySelect}
-                className="nav-select"
-              >
-                <option value="">All Categories</option>
-
-                <optgroup label="Fashion">
-                  <option value="2">Men's Wear</option>
-                  <option value="3">Women's Wear</option>
-                  <option value="4">Kids Wear</option>
-                </optgroup>
-
-                <optgroup label="Electronics">
-                  <option value="5">Mobiles</option>
-                  <option value="6">Laptops</option>
-                  <option value="7">Audio</option>
-                </optgroup>
-
-                <optgroup label="Automobile">
-                  <option value="8">Cars</option>
-                  <option value="9">Bikes</option>
-                  <option value="10">Accessories</option>
-                </optgroup>
-
-                <optgroup label="Grocery">
-                  <option value="11">Fruits</option>
-                  <option value="12">Vegetables</option>
-                  <option value="13">Snacks</option>
-                </optgroup>
-              </select>
-            </div>
-
-
-            <div className="nav-right">
-              <button className="wishlistbutton"> WishList</button>
-              <button className="nav-btn" onClick={() => router.push("/dashboard/cart")}>
-                Cart
-              </button>
-
-              <button className="nav-btn nav-logout" onClick={handlelogout}>
-                Logout
-              </button>
-            </div>
-          </>
-        )}
+        <div className="nav-right">
+          {user?.role === "seller" ? (
+            <>
+              <button onClick={() => router.push("/components/addform")}>Add Product</button>
+              <button onClick={() => router.push("/dashboard/sellerorder")}>Orders</button>
+            </>
+          ) : (
+            <>
+              <button onClick={() => router.push("/dashboard/wishlist")}>WishList</button>
+              <button onClick={() => router.push("/dashboard/cart")}>Cart</button>
+            </>
+          )}
+          <button onClick={handleLogout}>Logout</button>
+        </div>
       </header>
 
       <main>
-        {products?.length > 0 ? (
-          products.map((product: any) => <Card key={product.id} product={product} />)
+        {products.length ? (
+          products
+            .filter((p: any) => (user?.role === "seller" ? true : !p.isBanned))
+            .map((p: any) => <Card key={p.id} product={p} />)
         ) : (
           <p>No products found</p>
         )}
@@ -177,7 +119,7 @@ function Dashboard() {
 
       <footer className="footer">Ecommerce site</footer>
     </>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;

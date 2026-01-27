@@ -85,7 +85,20 @@ export class WishlistService {
     return `This action updates a #${id} wishlist`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} wishlist`;
+  async remove(userId: number, productId: number) {
+  const item = await this.wishlistRepo.findOne({
+    where: { userId, productId }
+  });
+
+  if (!item) {
+    throw new HttpException(
+      { message: "Wishlist item not found", status: 404 },
+      404
+    );
   }
+
+  await this.wishlistRepo.remove(item);
+  return { message: "Removed from wishlist" };
+}
+
 }
