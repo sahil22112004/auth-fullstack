@@ -32,8 +32,14 @@ config();
     password: process.env.DB_PASSWORD,
     database: process.env.DB_DATABASE,
     entities: [User,Product,Category,Address,Order,Wishlist,Discount,Advertisment],
-    synchronize: false
+    synchronize: false,
+    ssl: {
+    rejectUnauthorized: false,
+  },
     
+}),
+ConfigModule.forRoot({
+    isGlobal: true,
   }),
     AuthModule,
     ProductsModule,
@@ -42,10 +48,8 @@ config();
     AddressModule,
     WishlistModule,
     DiscountsModule,
-    AdvertismentModule,
-  ConfigModule.forRoot({
-      isGlobal: true,
-    })],
+    AdvertismentModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

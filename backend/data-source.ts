@@ -28,7 +28,10 @@ const datasource :DataSourceOptions & SeederOptions={
   migrations: ['src/migrations/*.ts'],
   synchronize: false, 
   // factories: [UserFactory],
-  seeds: [AdvertisementSeeder],
+  seeds: [AdvertisementSeeder,DiscountSeeder,UserSeeder],
+  ssl: {
+    rejectUnauthorized: false,
+  },
 }
 
 export const AppDataSource = new DataSource(datasource);

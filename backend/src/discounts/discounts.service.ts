@@ -18,7 +18,7 @@ export class DiscountsService {
   }
 
   findAll() {
-    return `This action returns all discounts`;
+    return this.discountRepo.find();
   }
 
   async findOne(discountName: string) {
