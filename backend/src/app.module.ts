@@ -16,18 +16,24 @@ import { WishlistModule } from './wishlist/wishlist.module';
 import { Wishlist } from './wishlist/entities/wishlist.entity';
 import { DiscountsModule } from './discounts/discounts.module';
 import { Discount } from './discounts/entities/discount.entity';
+import { AdvertismentModule } from './advertisment/advertisment.module';
+import { Advertisment } from './advertisment/entities/advertisment.entity';
+import { ConfigModule } from '@nestjs/config'
+import { config } from "dotenv"
 
+config();
 @Module({
   imports: [
     TypeOrmModule.forRoot({
     type: 'postgres',
-    host: 'localhost',
-    port: 5432,
-    username: 'postgres',
-    password: '1104',
-    database: 'auth',
-    entities: [User,Product,Category,Address,Order,Wishlist,Discount],
+    host: process.env.DB_HOST,
+    port: Number(process.env.DB_PORT),
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_DATABASE,
+    entities: [User,Product,Category,Address,Order,Wishlist,Discount,Advertisment],
     synchronize: false
+    
   }),
     AuthModule,
     ProductsModule,
@@ -35,7 +41,11 @@ import { Discount } from './discounts/entities/discount.entity';
     OrdersModule,
     AddressModule,
     WishlistModule,
-    DiscountsModule],
+    DiscountsModule,
+    AdvertismentModule,
+  ConfigModule.forRoot({
+      isGlobal: true,
+    })],
   controllers: [AppController],
   providers: [AppService],
 })

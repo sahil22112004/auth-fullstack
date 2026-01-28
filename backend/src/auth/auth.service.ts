@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { User } from './entities/auth.entity';
 
 @Injectable()
@@ -97,7 +97,7 @@ export class AuthService {
 
 
   async findAll() {
-  const users = await this.userRepo.find();
+  const users = await this.userRepo.find({where:{role:Not("admin")}});
   return users;
     }
 

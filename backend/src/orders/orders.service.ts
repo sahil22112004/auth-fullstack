@@ -22,7 +22,7 @@ export class OrdersService {
     const product = await this.productRepo.findOne({ where: { id: item.productId } });
 
     if (!product) {
-      throw new HttpException(`Product ${item.productId} not found`, HttpStatus.NOT_FOUND);
+      throw new HttpException(`Product not found`, 404);
     }
 
     if (product.stock < item.quantity) {
@@ -157,10 +157,10 @@ export class OrdersService {
     const order = await this.findOne(id);
 
     if (order.status === 'shipped')
-      throw new HttpException('Order already shipped', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Order already shipped', 409);
 
     if (order.status !== 'processing')
-      throw new HttpException('Only processing orders can be shipped', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Only processing orders can be shipped',400);
 
     order.status = 'shipped';
     return this.orderRepo.save(order);
@@ -170,10 +170,10 @@ export class OrdersService {
     const order = await this.findOne(id);
 
     if (order.status === 'delivered')
-      throw new HttpException('Order already delivered', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Order already delivered', 409);
 
     if (order.status !== 'shipped')
-      throw new HttpException('Only shipped orders can be delivered', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Only shipped orders can be delivered', 400);
 
     order.status = 'delivered';
     return this.orderRepo.save(order);
@@ -183,10 +183,10 @@ export class OrdersService {
     const order = await this.findOne(id);
 
     if (order.status === 'cancelled')
-      throw new HttpException('Order already cancelled', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Order already cancelled', 409);
 
     if (order.status === 'delivered')
-      throw new HttpException('Delivered orders cannot be cancelled', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Delivered orders cannot be cancelled', 400);
 
     order.status = 'cancelled';
     return this.orderRepo.save(order);
