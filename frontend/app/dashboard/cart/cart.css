@@ -294,6 +294,19 @@
 
 .cancel-btn {
   background: gray !important;
+  height: 4vh;
+  border-radius: 10px;
+}
+
+.saveAddress {
+  background-color: #2874f0;
+  height: 4vh;
+  border-radius: 10px;
+}
+
+.saveAddress:hover {
+  background-color: #186cf2;
+  transform: translateY(-1);
 }
 
 .error {

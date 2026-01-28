@@ -11,10 +11,12 @@ async function bootstrap() {
     whitelist:true,
     transform: true
   }))
-  app.use("/temp", express.static("temp"));
+  app.use("/uploads", express.static("uploads"));
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();
+
+
 
 // import { NestFactory } from '@nestjs/core';
 // import { AppModule } from './app.module';

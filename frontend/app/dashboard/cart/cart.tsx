@@ -42,6 +42,8 @@ export default function CartPage() {
   const [promoInput, setPromoInput] = useState("");
   const [discountPercent, setDiscountPercent] = useState<number>(0);
   const [discountStatus, setDiscountStatus] = useState<"none" | "success" | "error">("none");
+  const [isAddingAddress ,setIsAddingAddress] = useState<boolean>(false)
+  
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<AddressFormType>({
     resolver: zodResolver(AddressSchema),
@@ -57,12 +59,20 @@ export default function CartPage() {
   }
 
   const onSubmitAddress = async (data: AddressFormType) => {
+    try{
+      setIsAddingAddress(true)
     const payload = { userId: String(user?.id), ...data };
     await createAddress(payload);
     await loadAddresses();
     setShowModal(false);
     reset();
     enqueueSnackbar("Address added successfully!", { variant: "success" });
+    setIsAddingAddress(false)
+  }catch(err){
+    enqueueSnackbar(`${err}`, { variant: "error" });
+    setIsAddingAddress(false)
+
+  }
   };
 
   const totalAmount = cart.reduce((sum: number, item: any) => sum + item.price * item.quantity, 0);
@@ -250,7 +260,7 @@ export default function CartPage() {
                 <input {...register("phoneNumber")} placeholder="Phone Number" />
                 {errors.phoneNumber && <p className="error">{errors.phoneNumber.message}</p>}
 
-                <button type="submit">Save Address</button>
+                <button className="saveAddress" type="submit" disabled={isAddingAddress}  >{isAddingAddress? "Adding..." : "Save Address"}</button>
                 <button type="button" className="cancel-btn" onClick={() => setShowModal(false)}>
                   Cancel
                 </button>
