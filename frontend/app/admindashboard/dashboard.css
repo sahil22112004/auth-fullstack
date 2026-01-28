@@ -4,7 +4,6 @@
   font-family: system-ui, sans-serif;
 }
 
-/* ADMIN HEADER */
 .admin-header {
   display: flex;
   justify-content: space-between;
@@ -52,6 +51,8 @@
   font-size: 15px;
   transition: 0.3s;
   border-right: 1px solid #d0d0d0;
+  border-radius: 10px;
+  margin: 0px 10px
 }
 
 .admin-tabs button:last-child {
@@ -63,7 +64,6 @@
   color: white;
 }
 
-/* TABLE STYLING */
 .admin-table {
   overflow-x: auto;
 }
@@ -85,7 +85,6 @@ th {
   font-weight: 600;
 }
 
-/* ACTION BUTTONS */
 .block-btn {
   background: #dc3545;
   color: white;

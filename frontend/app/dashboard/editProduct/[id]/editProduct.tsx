@@ -10,10 +10,8 @@ import { addProduct, fetchCategories, fetchProductById, updateProduct } from "..
 import { RootState } from "../../../redux/store";
 import { useSelector } from "react-redux";
 
-export default function EditProduct({id}:any) {
-
-  const productdetail:any = fetchProductById(id)
-  const productSchema = z.object({
+export default  function EditProduct({id}:any) {
+    const productSchema = z.object({
     productName: z.string().min(3, "Name must be at least 3 chars"),
     price: z.number().min(1, "Price must be greater than 0"),
     stock: z.number().min(1, "Price must be greater than 0"),
@@ -28,28 +26,38 @@ export default function EditProduct({id}:any) {
   });
 
   type ProductFormData = z.infer<typeof productSchema>;
+const [productdetail, setProductDetail] = useState<any>(null);
+
+useEffect(() => {
+  const getDetail = async () => {
+    const product = await fetchProductById(id);
+    setProductDetail(product);
+  };
+  getDetail();
+}, [id]);
+
+  console.log("getting info",productdetail)
+
 
   const router = useRouter();
   const currentUser = useSelector((state: RootState) => state.auth.currentUser);
 
   const [categories, setCategories] = useState<any[]>([]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema),
-    defaultValues: {
-      productName:productdetail?.productName,
-      price:productdetail.price,
-      stock:productdetail.stock,
-      description:productdetail.description,
-      categoryId:productdetail.categoryId,
-      // photoUrl:[]
-    },
-  });
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<ProductFormData>({
+  resolver: zodResolver(productSchema),
+});
+useEffect(() => {
+  if (productdetail) {
+    reset({
+      productName: productdetail.productName,
+      price: productdetail.price,
+      stock: productdetail.stock,
+      description: productdetail.description,
+      categoryId: String(productdetail.categoryId),
+    });
+  }
+}, [productdetail, reset]);
 
   useEffect(() => {
     fetchCategories().then((data) => setCategories(data));
@@ -94,7 +102,7 @@ export default function EditProduct({id}:any) {
   return (
     <div className="main">
       <form onSubmit={handleSubmit(onSubmit)} className="form">
-        <h2>Add Product</h2>
+        <h2>Update Product</h2>
 
         <input
           type="text"
@@ -141,6 +149,7 @@ export default function EditProduct({id}:any) {
         )}
 
         <button type="submit">Update</button>
+        <button onClick={()=>router.push('/dashboard')}>Cancel</button>
       </form>
     </div>
   );

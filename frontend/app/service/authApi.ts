@@ -1,5 +1,10 @@
+// const BASE_URL = "http://localhost:3000";
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL
+
+
 export const apiLogin = async (user: any) => {
-  const res = await fetch('http://localhost:3000/auth/login', {
+  const res = await fetch(`${BASE_URL}/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(user),
@@ -11,7 +16,7 @@ export const apiLogin = async (user: any) => {
 
 export const apiRegister = async (user: any) => {
   console.log('working')
-  const res = await fetch('http://localhost:3000/auth/register', {
+  const res = await fetch(`${BASE_URL}/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(user),
@@ -23,7 +28,7 @@ export const apiRegister = async (user: any) => {
 };
 
 export const apiGoogleLogin = async (user: any) => {
-  const res = await fetch('http://localhost:3000/auth/signInWithGoogle', {
+  const res = await fetch(`${BASE_URL}/auth/signInWithGoogle`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(user),

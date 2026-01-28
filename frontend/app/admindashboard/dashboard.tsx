@@ -40,6 +40,7 @@ export default function AdminDashboard() {
       }
       if (tab === "orders") {
         const data = await getAllOrders();
+        console.log(data)
         setOrders(data);
       }
     } catch (err) {
@@ -76,13 +77,11 @@ export default function AdminDashboard() {
         return (
   <div className="admin-container">
 
-    {/* HEADER */}
     <div className="admin-header">
       <h2>Welcome Admin</h2>
       <button className="logout-btn" onClick={handleLogout}>Logout</button>
     </div>
 
-    {/* SECTION TABS */}
     <div className="admin-tabs">
       <button className={tab === "users" ? "active" : ""} onClick={() => setTab("users")}>
         Users
@@ -95,7 +94,6 @@ export default function AdminDashboard() {
       </button>
     </div>
 
-    {/* REST IS SAME */}
     {tab === "users" && (
       <div className="admin-table">
         <table>
@@ -165,18 +163,18 @@ export default function AdminDashboard() {
               <th>User</th>
               <th>Amount</th>
               <th>Status</th>
-              <th>Date</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {orders?.map((o) => (
+
               <tr key={o.id}>
                 <td>{o.productname}</td>
                 <td>{o.userid}</td>
                 <td>{o.totalamount}</td>
                 <td>{o.status}</td>
-                <td>{new Date(o.createdAt).toLocaleString()}</td>
+                {/* <td>{new Date(o.createdAt).toLocaleString()}</td> */}
                 <td>
                   {o.status !== "delivered" && o.status !== "cancelled" && (
                     <button className="cancel-btn" onClick={() => handleCancel(o.id)}>

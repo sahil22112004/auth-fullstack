@@ -1,5 +1,12 @@
+
+// const BASE_URL = "http://localhost:3000";
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+
+
 export const addToWishlist = async (wishlist: any) => {
-  const res = await fetch(`http://localhost:3000/wishlist`, {
+  const res = await fetch(`${BASE_URL}/wishlist`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(wishlist),
@@ -11,7 +18,7 @@ export const addToWishlist = async (wishlist: any) => {
 };
 
 export const removeFromWishlist = async (userId: any, productId: any) => {
-  const res = await fetch(`http://localhost:3000/wishlist/${userId}/${productId}`, {
+  const res = await fetch(`${BASE_URL}/wishlist/${userId}/${productId}`, {
     method: 'DELETE'
   });
 
@@ -21,7 +28,7 @@ export const removeFromWishlist = async (userId: any, productId: any) => {
 };
 
 export const fetchwishlist = async (userId: any) => {
-  const res = await fetch(`http://localhost:3000/wishlist/user/${userId}`);
+  const res = await fetch(`${BASE_URL}/wishlist/user/${userId}`);
 
   const data = await res.json();
   if (!res.ok) throw new Error(data.message || 'Failed to fetch wishlist');
@@ -29,7 +36,7 @@ export const fetchwishlist = async (userId: any) => {
 };
 
 export const isInWishlist = async (userId: any, productId: any) => {
-  const res = await fetch(`http://localhost:3000/wishlist/user/${userId}`);
+  const res = await fetch(`${BASE_URL}/wishlist/user/${userId}`);
   const data = await res.json();
 
   if (!res.ok) throw new Error(data.message || 'Failed to check wishlist');

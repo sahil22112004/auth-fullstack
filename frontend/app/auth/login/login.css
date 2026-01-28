@@ -67,6 +67,7 @@
   margin-bottom: 18px;
   height: 42px;
   font-size: 15px !important;
+  margin-bottom: 20px !important;
 }
 
 .login-btn:hover {
@@ -78,6 +79,7 @@
   margin: 10px 0 18px 0;
   font-weight: 500;
   font-size: 15px;
+  margin-bottom: 20px !important;
 }
 
 .google-btn {
@@ -87,6 +89,7 @@
   font-weight: bold !important;
   height: 42px;
   font-size: 15px !important;
+  margin-bottom: 20px !important;
 }
 
 .signup-text {
@@ -143,6 +146,7 @@
   .google-btn {
     height: 40px;
     font-size: 14px !important;
+    margin-bottom: 20px !important;
   }
 
   .signup-text {

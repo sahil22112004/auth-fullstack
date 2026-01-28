@@ -1,4 +1,6 @@
-const BASE_URL = "http://localhost:3000";
+// const BASE_URL = "http://localhost:3000";
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL
 
 export async function createAddress(addressData: any) {
   const res = await fetch(`${BASE_URL}/address`, {

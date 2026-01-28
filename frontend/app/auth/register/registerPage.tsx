@@ -64,7 +64,6 @@ function Register() {
     <div className="register-outer">
       <div className="register-container">
 
-        {/* LEFT SIDE */}
         <div className="register-left">
           <Typography variant="h4" className="register-title">Looks like you're new here!</Typography>
           <Typography className="register-subtitle">
@@ -73,7 +72,6 @@ function Register() {
 
         </div>
 
-        {/* RIGHT SIDE */}
         <div className="register-right">
           <form onSubmit={handleSubmit(onSubmit)} className="register-form">
 
@@ -149,7 +147,6 @@ function Register() {
                   helperText={errors.role?.message}
                   className="register-input"
                 >
-                  <MenuItem value="admin">Admin</MenuItem>
                   <MenuItem value="seller">Seller</MenuItem>
                   <MenuItem value="customer">Customer</MenuItem>
                 </TextField>

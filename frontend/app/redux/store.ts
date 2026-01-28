@@ -1,6 +1,7 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import authReducer from "./slices/authSlice";
 import productReducer from "./slices/productSlice"
+import AdvertisementReducer from "./slices/advertisementSlice"
 import {
   persistStore,
   persistReducer,
@@ -11,19 +12,20 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
-import storage from "redux-persist/lib/storage"; // defaults to localStorage for web
+import storage from "redux-persist/lib/storage";
 
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth"], // slices to persist
+  whitelist: ["auth"], 
 };
 
 const persistedReducer = persistReducer(
   persistConfig,
   combineReducers({
     auth: authReducer,
-    product:productReducer
+    product:productReducer,
+    Advertisement:AdvertisementReducer
   })
 );
 
@@ -38,7 +40,6 @@ export const store = configureStore({
 });
 
 export const persistor = persistStore(store);
-// persistor.purge();
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;

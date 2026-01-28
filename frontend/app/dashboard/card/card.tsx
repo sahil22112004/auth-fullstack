@@ -15,6 +15,7 @@ import {
   removeFromWishlist,
   fetchwishlist
 } from "../../service/wishlist";
+import { deleteProduct } from "../../service/productApi";
 
 function Card({ product }: { product: any }) {
   const dispatch = useDispatch();
@@ -82,7 +83,7 @@ function Card({ product }: { product: any }) {
             >
               Edit
             </button>
-            <button className="viewButton">Delete</button>
+            <button className="viewButton" onClick={()=>deleteProduct(product.id)}>Delete</button>
           </div>
         )
       ) : (

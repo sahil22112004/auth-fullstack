@@ -63,7 +63,6 @@ export default function ViewProduct({ id }:any) {
           )}
         </div>
 
-        {/* DETAILS SECTION */}
         <div className="details-section">
           <h2>{product.productName}</h2>
           <p className="description">{product.description}</p>

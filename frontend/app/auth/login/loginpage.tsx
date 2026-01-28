@@ -77,7 +77,6 @@ function Login() {
     <div className="login-outer">
       <div className="login-container">
 
-        {/* LEFT SIDE */}
         <div className="login-left">
           <Typography variant="h4" className="login-title">Login</Typography>
           <Typography className="login-subtitle">
@@ -86,7 +85,6 @@ function Login() {
 
         </div>
 
-        {/* RIGHT SIDE */}
         <div className="login-right">
           <form onSubmit={handleSubmit(onSubmit)} className="login-form">
 

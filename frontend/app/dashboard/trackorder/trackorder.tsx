@@ -15,11 +15,13 @@ import {
   Typography,
   Paper,
 } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 export default function TrackOrderPage() {
   const user = useSelector((state: RootState) => state.auth.currentUser);
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter()
 
   useEffect(() => {
     if (user?.id) loadOrders();
@@ -34,16 +36,6 @@ export default function TrackOrderPage() {
     }
   }
 
-  if (loading) return <h3 className="loading">Loading orders...</h3>;
-
-  if (orders.length === 0) {
-    return (
-      <div className="no-orders">
-        <h2>No Orders Found</h2>
-        <p>You haven't placed any orders yet.</p>
-      </div>
-    );
-  }
 
   const getStepIndex = (status: string) => {
     switch (status) {
@@ -60,9 +52,17 @@ export default function TrackOrderPage() {
 
   return (
     <div className="track-wrapper">
+      <div className="header">
+        <button onClick={()=>router.push('/dashboard')} >Home</button>
+      </div>
       <h2 className="track-title">My Orders</h2>
-
-      <div className="order-list">
+      {(orders.length === 0)?(
+        <div className="no-orders">
+        <h2>No Orders Found</h2>
+        <p>You haven't placed any orders yet.</p>
+      </div>
+      ):(
+        <div className="order-list">
         {orders.map((order, index) => (
           <Paper elevation={2} className="order-card" key={index}>
             {order.status !== "cancelled" ? (
@@ -108,6 +108,9 @@ export default function TrackOrderPage() {
           </Paper>
         ))}
       </div>
+
+      )}
+
     </div>
   );
 }

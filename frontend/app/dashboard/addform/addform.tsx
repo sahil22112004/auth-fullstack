@@ -11,7 +11,6 @@ import { addProduct, fetchCategories } from "../../service/productApi";
 import { RootState } from "../../redux/store";
 import { useSelector } from "react-redux";
 
-/* ------------------ ZOD SCHEMA ------------------ */
 const productSchema = z.object({
   productName: z.string().min(3, "Name must be at least 3 chars"),
   price: z.number().min(1, "Price must be greater than 0"),
@@ -19,7 +18,6 @@ const productSchema = z.object({
   description: z.string().min(5, "Description required"),
   categoryId: z.string().min(1, "Select a category"),
 
-  // Multiple images validation
   photoUrl: z
     .any()
     .refine((files) => files instanceof FileList, "Invalid file input")
@@ -46,7 +44,6 @@ export default function AddProduct() {
     resolver: zodResolver(productSchema),
   });
 
-  /* ----------- PREVIEW IMAGE HANDLER ----------- */
   const photoFiles = watch("photoUrl");
 
   useEffect(() => {
@@ -60,12 +57,10 @@ export default function AddProduct() {
     }
   }, [photoFiles]);
 
-  /* ----------- LOAD CATEGORIES ----------- */
   useEffect(() => {
     fetchCategories().then((data) => setCategories(data));
   }, []);
 
-  /* ----------- SUBMIT FORM ----------- */
   const onSubmit = async (product: ProductFormData) => {
     const formData = new FormData();
     const userId: any = currentUser?.id ?? "1";
@@ -77,7 +72,6 @@ export default function AddProduct() {
     formData.append("stock", String(product.stock));
     formData.append("categoryId", product.categoryId);
 
-    // Convert Zod unknown input → FileList safely
     const files = product.photoUrl as FileList;
 
     Array.from(files).forEach((file: File) => {
@@ -156,7 +150,6 @@ export default function AddProduct() {
           <p className="error">{errors.photoUrl.message as string}</p>
         )}
 
-        {/* IMAGE PREVIEW SECTION */}
         {previewImages.length > 0 && (
           <div className="preview-container">
             {previewImages.map((src, i) => (
@@ -166,6 +159,8 @@ export default function AddProduct() {
         )}
 
         <button type="submit">Add Product</button>
+        <button onClick={()=>router.push('/dashboard')}>Cancel</button>
+
       </form>
     </div>
   );
